@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <NoWarn>$(NoWarn);CS5001;SA1200;SA1101;SA1633;SA1636;SA1609;SA1518;SA1210;SA0001</NoWarn>
+    <!-- Prevent SDK from generating assembly attributes that may duplicate existing ones -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <!-- Package metadata for alpha prerelease -->
+    <PackageId>Zentient.Testing</PackageId>
+    <Version>0.1.0-alpha.1</Version>
+    <Authors>Ulf Bourelius;Zentient Framework Team</Authors>
+    <Description>Alpha release of Zentient.Testing — lightweight test harness, small mock engine and scenario DSL for Arrange→Act→Assert flows.</Description>
+    <PackageTags>testing;zentrient;mocking;harness</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/ulfbou/Zentient.Testing</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ulfbou/Zentient.Testing</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Alpha: core DSL, harness and minimal mock engine. See Specification.md for details.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <RepositoryBranch>main</RepositoryBranch>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zentient.Abstractions.Testing\Zentient.Abstractions.Testing.csproj" />
+  </ItemGroup>
+
+</Project>

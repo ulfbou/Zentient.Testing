@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+	  <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <NoWarn>$(NoWarn);CS5001;SA1200;SA1101;SA1633;SA1636;SA1609;SA1518;SA1210;SA0001;CA1716;CA1707</NoWarn>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Package metadata -->
+    <PackageId>Zentient.Abstractions.Testing</PackageId>
+    <Version>0.1.0-alpha.1</Version>
+    <Authors>Ulf Bou</Authors>
+    <Description>Abstractions for Zentient.Testing alpha release.</Description>
+    <PackageTags>testing;abstractions</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/ulfbou/Zentient.Testing</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ulfbou/Zentient.Testing</PackageProjectUrl>
+    <IsPackable>true</IsPackable>
+    <RepositoryBranch>main</RepositoryBranch>
+  </PropertyGroup>
+
+</Project>
