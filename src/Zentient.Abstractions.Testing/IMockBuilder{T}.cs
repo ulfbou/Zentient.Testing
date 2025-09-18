@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="IMockBuilder{T}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;

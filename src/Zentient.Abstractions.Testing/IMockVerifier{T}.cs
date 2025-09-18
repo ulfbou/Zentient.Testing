@@ -1,4 +1,8 @@
-﻿namespace Zentient.Abstractions.Testing
+﻿// <copyright file="IMockVerifier{T}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
 {
     /// <summary>
     /// Verifier API for asserting calls were made on mocks.

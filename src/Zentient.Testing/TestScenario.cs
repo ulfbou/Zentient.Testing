@@ -1,3 +1,7 @@
+// <copyright file="TestScenario.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,10 +11,11 @@ using Zentient.Abstractions.Testing;
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Simple test scenario implementation that supports Arrange -> Act -> Assert.
+    /// Implementation of <see cref="ITestScenario{TInput,TResult}"/> that supports arranging
+    /// a harness, executing an act delegate, and performing assertions against the result.
     /// </summary>
-    /// <typeparam name="TInput">Input type.</typeparam>
-    /// <typeparam name="TResult">Result type.</typeparam>
+    /// <typeparam name="TInput">Type of the scenario input.</typeparam>
+    /// <typeparam name="TResult">Type of the scenario result.</typeparam>
     internal sealed class TestScenario<TInput, TResult> : ITestScenario<TInput, TResult>
     {
         private readonly List<Action<ITestHarnessBuilder>> _arrangers = new List<Action<ITestHarnessBuilder>>();
@@ -26,8 +31,9 @@ namespace Zentient.Testing.Internal
         }
 
         /// <summary>
-        /// Sets the Act delegate directly. This would typically be done by a factory in real usage.
+        /// Configure the act delegate to be invoked during <see cref="ActAsync"/>.
         /// </summary>
+        /// <param name="act">Asynchronous delegate that executes the system under test.</param>
         public void SetAct(Func<ITestHarness, TInput, CancellationToken, Task<TResult>> act)
         {
             _act = act ?? throw new ArgumentNullException(nameof(act));

@@ -11,19 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zentient.Abstractions.Testi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{6A8A856D-C22E-47F7-A687-5D949CCE6976}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{4FCB0AEA-329F-4487-B2D5-8F70B18440AC}"
-	ProjectSection(SolutionItems) = preProject
-		docs\internal\Specification.md = docs\internal\Specification.md
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zentient.Abstractions.Expressions", "..\expressions\src\Zentient.Abstractions.Expressions\Zentient.Abstractions.Expressions.csproj", "{F069CCCE-EE13-B69B-DD5A-A98936B4C014}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zentient.Expressions", "..\expressions\src\Zentient.Expressions\Zentient.Expressions.csproj", "{361357C9-6463-A763-CB36-7E8FCE9F59AF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2578B75B-6925-49BA-87A4-C21267B9F874}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		CHANGELOG.md = CHANGELOG.md
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A44019C8-40BF-4591-9DE4-B0C156E7AF89}"
@@ -94,30 +89,6 @@ Global
 		{21D4287D-9C7E-48D1-B38F-A707BB8950B2}.Release|x64.Build.0 = Release|Any CPU
 		{21D4287D-9C7E-48D1-B38F-A707BB8950B2}.Release|x86.ActiveCfg = Release|Any CPU
 		{21D4287D-9C7E-48D1-B38F-A707BB8950B2}.Release|x86.Build.0 = Release|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Debug|x64.Build.0 = Debug|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Debug|x86.Build.0 = Debug|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Release|x64.ActiveCfg = Release|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Release|x64.Build.0 = Release|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Release|x86.ActiveCfg = Release|Any CPU
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014}.Release|x86.Build.0 = Release|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Debug|x64.Build.0 = Debug|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Debug|x86.Build.0 = Debug|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Release|x64.ActiveCfg = Release|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Release|x64.Build.0 = Release|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Release|x86.ActiveCfg = Release|Any CPU
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF}.Release|x86.Build.0 = Release|Any CPU
 		{5BAE937D-75BB-4E49-8644-02EA19973E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5BAE937D-75BB-4E49-8644-02EA19973E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BAE937D-75BB-4E49-8644-02EA19973E7A}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -137,9 +108,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CCA596B2-DE89-40F3-B6F0-594EEF4A556D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{21D4287D-9C7E-48D1-B38F-A707BB8950B2} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{4FCB0AEA-329F-4487-B2D5-8F70B18440AC} = {6A8A856D-C22E-47F7-A687-5D949CCE6976}
-		{F069CCCE-EE13-B69B-DD5A-A98936B4C014} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{361357C9-6463-A763-CB36-7E8FCE9F59AF} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{5BAE937D-75BB-4E49-8644-02EA19973E7A} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

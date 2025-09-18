@@ -1,0 +1,34 @@
+mode: ContinuousDelivery
+next-version: 0.1.0
+
+branches:
+  main:
+    regex: ^main$
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+
+  develop:
+    regex: ^develop$
+    tag: alfa
+    increment: Minor
+
+  release:
+    regex: ^release(/|$)
+    tag: beta
+    increment: Patch
+
+  feature:
+    regex: ^(feature|feat)(/|$)
+    tag: alfa
+    increment: Minor
+
+  hotfix:
+    regex: ^hotfix(/|$)
+    tag: hotfix
+    increment: Patch
+
+ignore:
+  sha: []
+
+commit-message-incrementing: Enabled

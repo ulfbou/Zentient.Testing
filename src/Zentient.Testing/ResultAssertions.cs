@@ -1,3 +1,7 @@
+// <copyright file="ResultAssertions.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
 using System;
 using System.Linq.Expressions;
 using Zentient.Abstractions.Testing;
@@ -5,15 +9,15 @@ using Zentient.Abstractions.Testing;
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Basic result assertion helpers.
+    /// Provides a small set of result assertion helpers used by test scenarios.
     /// </summary>
-    /// <typeparam name="TResult">Result type.</typeparam>
+    /// <typeparam name="TResult">Type of the result being asserted.</typeparam>
     internal sealed class ResultAssertions<TResult> : IResultAssertions<TResult>
     {
         private readonly TResult _value;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ResultAssertions{TResult}"/>.
+        /// Initializes a new instance of <see cref="ResultAssertions{TResult}"/> with the supplied value.
         /// </summary>
         /// <param name="value">The result value under test.</param>
         public ResultAssertions(TResult value) => _value = value;

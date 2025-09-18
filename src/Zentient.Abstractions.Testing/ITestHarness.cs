@@ -1,4 +1,8 @@
-﻿namespace Zentient.Abstractions.Testing
+﻿// <copyright file="ITestHarness.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
 {
     /// <summary>
     /// Represents a lightweight per-test service resolver used by the harness.

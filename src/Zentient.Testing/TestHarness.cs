@@ -1,5 +1,8 @@
+// <copyright file="TestHarness.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,16 +11,17 @@ using Zentient.Abstractions.Testing;
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Lightweight per-test resolver implementing <see cref="ITestHarness"/>.
+    /// Lightweight per-test resolver that provides simple registration-based resolution
+    /// and fallback constructor-based instantiation for types.
     /// </summary>
     internal sealed class TestHarness : ITestHarness, IDisposable
     {
         private readonly Dictionary<Type, object> _registrations;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="TestHarness"/> with the provided registrations.
+        /// Initializes a new instance of <see cref="TestHarness"/> using the supplied registrations.
         /// </summary>
-        /// <param name="registrations">Prepopulated registrations.</param>
+        /// <param name="registrations">A dictionary of pre-populated service registrations keyed by type.</param>
         public TestHarness(Dictionary<Type, object> registrations)
         {
             _registrations = registrations ?? new Dictionary<Type, object>();
@@ -30,15 +34,19 @@ namespace Zentient.Testing.Internal
             if (_registrations.TryGetValue(t, out var instance))
                 return (T)instance;
 
-            // Try to construct via constructors using registered dependencies
             var ctors = t.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-                .OrderByDescending(c => c.GetParameters().Length);
+                .OrderByDescending(c => c.GetParameters().Length)
+                .ToArray();
+
+            var attempted = new List<string>();
+            var missingAcross = new HashSet<string>();
 
             foreach (var ctor in ctors)
             {
                 var parameters = ctor.GetParameters();
                 var args = new object?[parameters.Length];
                 var ok = true;
+                var missingForThis = new List<string>();
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     var pType = parameters[i].ParameterType;
@@ -49,19 +57,36 @@ namespace Zentient.Testing.Internal
                     else
                     {
                         ok = false;
-                        break;
+                        missingForThis.Add(pType.FullName ?? pType.Name);
+                        missingAcross.Add(pType.FullName ?? pType.Name);
                     }
                 }
 
-                if (!ok)
-                    continue;
+                var sig = parameters.Length == 0
+                    ? "()"
+                    : "(" + string.Join(", ", parameters.Select(p => p.ParameterType.Name + " " + p.Name)) + ")";
 
-                return (T)ctor.Invoke(args);
+                if (ok)
+                {
+                    return (T)ctor.Invoke(args);
+                }
+
+                attempted.Add($"ctor {sig} - missing: {string.Join(", ", missingForThis)}");
             }
 
-            throw new InvalidOperationException($"Could not resolve type {t.FullName}. Register it with the harness or provide constructor dependencies.");
+            var message = $"Could not resolve type '{t.FullName}'.\n" +
+                          "Attempted public constructors:\n" +
+                          string.Join("\n", attempted) + "\n" +
+                          (missingAcross.Count > 0
+                              ? "Register the following dependency types with the harness using WithDependency<T>(instance): " + string.Join(", ", missingAcross)
+                              : "No suitable public constructor found. Consider adding a public constructor or register an instance with the harness.");
+
+            throw new InvalidOperationException(message);
         }
 
+        /// <summary>
+        /// Dispose the harness, disposing any registered <see cref="IDisposable"/> instances and clearing registrations.
+        /// </summary>
         public void Dispose()
         {
             foreach (var kv in _registrations)

@@ -1,4 +1,4 @@
-<!-- Zentient.Metadata.Tests project file -->
+<!-- Zentient.Testing.Tests project file -->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -26,7 +26,6 @@
   <PropertyGroup>
     <AssemblyTitle>Zentient.Metadata.Tests</AssemblyTitle>
     <Description>Test suite for Zentient.Metadata and related packages.</Description>
-    <Company>Zentient Framework Team</Company>
     <Authors>Zentient Framework Team</Authors>
     <Copyright>Copyright © 2025 Zentient Framework Team. All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/ulfbou/Zentient.Metadata.git</PackageProjectUrl>
@@ -50,13 +49,13 @@
     <!-- Test utilities for library testing -->
     <PackageReference Include="FluentAssertions" Version="8.6.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Zentient.Abstractions.Expressions" Version="0.1.0-alfa" />
+    <PackageReference Include="Zentient.Expressions" Version="0.1.0-alfa" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Project references: expressions projects live in sibling 'expressions' folder -->
-    <ProjectReference Include="..\..\expressions\src\Zentient.Abstractions.Expressions\Zentient.Abstractions.Expressions.csproj" />
     <ProjectReference Include="..\src\Zentient.Abstractions.Testing\Zentient.Abstractions.Testing.csproj" />
-    <ProjectReference Include="..\..\expressions\src\Zentient.Expressions\Zentient.Expressions.csproj" />
     <ProjectReference Include="..\src\Zentient.Testing\Zentient.Testing.csproj" />
   </ItemGroup>
 

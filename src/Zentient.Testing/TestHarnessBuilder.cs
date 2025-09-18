@@ -1,3 +1,7 @@
+// <copyright file="TestHarnessBuilder.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using Zentient.Abstractions.Testing;
@@ -5,7 +9,7 @@ using Zentient.Abstractions.Testing;
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Builder for configuring a TestHarness.
+    /// Builder used to configure and produce a <see cref="TestHarness"/> instance for a single test.
     /// </summary>
     internal sealed class TestHarnessBuilder : ITestHarnessBuilder
     {

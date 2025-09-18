@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="MockVerifier.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
 using System.Linq;
 
 using Zentient.Abstractions.Testing;
@@ -6,7 +10,7 @@ using Zentient.Abstractions.Testing;
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Default verifier implementation.
+    /// Verifier implementation that inspects recorded mock calls and asserts expectations.
     /// </summary>
     /// <typeparam name="T">The mocked interface type.</typeparam>
     internal sealed class MockVerifier<T> : IMockVerifier<T>
@@ -14,9 +18,9 @@ namespace Zentient.Testing.Internal
         private readonly MockEngine _engine;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockVerifier{T}"/> class.
+        /// Initializes a new instance of <see cref="MockVerifier{T}"/>.
         /// </summary>
-        /// <param name="engine">The mock engine to verify against.</param>
+        /// <param name="engine">The mock engine used to record calls.</param>
         public MockVerifier(MockEngine engine)
         {
             _engine = engine ?? throw new ArgumentNullException(nameof(engine));

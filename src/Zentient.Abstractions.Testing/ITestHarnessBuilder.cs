@@ -1,4 +1,8 @@
-﻿namespace Zentient.Abstractions.Testing
+﻿// <copyright file="ITestHarnessBuilder.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
 {
     /// <summary>
     /// Builder used to configure dependencies and mocks for a test harness.

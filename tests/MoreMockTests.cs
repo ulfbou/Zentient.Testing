@@ -1,3 +1,7 @@
+// <copyright file="ExpressionIntegrationTests.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;

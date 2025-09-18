@@ -1,11 +1,15 @@
-﻿using System;
+﻿// <copyright file="MockEngine.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Engine that records calls and matches configured behaviors for mocked methods.
+    /// Engine responsible for storing configured behaviors and replaying them for proxy calls.
     /// </summary>
     public sealed class MockEngine
     {
@@ -28,11 +32,11 @@ namespace Zentient.Testing.Internal
         }
 
         /// <summary>
-        /// Invokes the mock engine for a method call, returning the configured result or default value.
+        /// Invokes the engine for a method call, records the call, and returns a configured result.
         /// </summary>
-        /// <param name="method">The target method.</param>
-        /// <param name="args">The call arguments.</param>
-        /// <returns>The configured return value or a default instance for value types.</returns>
+        /// <param name="method">The invoked <see cref="MethodInfo"/>.</param>
+        /// <param name="args">Call arguments.</param>
+        /// <returns>The configured return value when a behavior matches; otherwise a default value for the method's return type.</returns>
         public object? Invoke(MethodInfo method, object?[] args)
         {
             _calls.Add(new CallInfo(method, args));
@@ -62,7 +66,7 @@ namespace Zentient.Testing.Internal
         }
 
         /// <summary>
-        /// Gets the recorded calls.
+        /// Gets the recorded calls for verification purposes.
         /// </summary>
         public IReadOnlyList<CallInfo> Calls => _calls;
     }

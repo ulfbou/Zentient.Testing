@@ -1,3 +1,7 @@
+// <copyright file="ProxyGenerator.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -6,6 +10,11 @@ using System.Reflection.Emit;
 
 namespace Zentient.Testing.Internal
 {
+    /// <summary>
+    /// Generates lightweight proxy implementations for interface types at runtime.
+    /// Proxies forward calls to a <see cref="MockEngine"/> instance which records invocations
+    /// and returns configured behavior results.
+    /// </summary>
     internal static class ProxyGenerator
     {
         private static readonly AssemblyBuilder s_assemblyBuilder;
@@ -19,6 +28,14 @@ namespace Zentient.Testing.Internal
             s_moduleBuilder = s_assemblyBuilder.DefineDynamicModule(name.Name!);
         }
 
+        /// <summary>
+        /// Creates a proxy instance implementing the requested interface type <typeparamref name="T"/>.
+        /// The created instance will forward calls to the provided <paramref name="engine"/>.
+        /// </summary>
+        /// <typeparam name="T">The interface type to proxy.</typeparam>
+        /// <param name="engine">The mock engine used to record and replay behaviors.</param>
+        /// <returns>An instance implementing <typeparamref name="T"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown when <typeparamref name="T"/> is not an interface.</exception>
         public static T CreateProxyInstance<T>(MockEngine engine)
         {
             var iface = typeof(T);
@@ -28,6 +45,11 @@ namespace Zentient.Testing.Internal
             return (T)Activator.CreateInstance(proxyType, engine)!;
         }
 
+        /// <summary>
+        /// Creates a proxy <see cref="Type"/> for the specified interface and caches it for reuse.
+        /// </summary>
+        /// <param name="iface">Interface type to implement in the generated proxy.</param>
+        /// <returns>A <see cref="Type"/> representing the generated proxy implementation.</returns>
         private static Type CreateProxyType(Type iface)
         {
             string proxyName = $"Zentient_Testing_Proxy_{iface.Name}_{Guid.NewGuid():N}";

@@ -1,14 +1,15 @@
-﻿using System;
+﻿// <copyright file="CallInfo.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
 using System.Reflection;
 
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Information about a single invocation made on a mock.
+    /// Contains information about a single invocation performed against a mock proxy.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of <see cref="CallInfo"/>.
-    /// </remarks>
     /// <param name="method">The invoked method.</param>
     /// <param name="args">The arguments passed to the method.</param>
     public sealed class CallInfo(MethodInfo method, object?[] args)

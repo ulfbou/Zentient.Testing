@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="MockBuilder{T}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,16 +12,20 @@ using Zentient.Abstractions.Testing;
 namespace Zentient.Testing.Internal
 {
     /// <summary>
-    /// Default mock builder implementation.
+    /// Default mock builder implementation used to configure behaviors for a mocked interface.
     /// </summary>
     /// <typeparam name="T">The mocked interface type.</typeparam>
-
     internal sealed class MockBuilder<T> : IMockBuilder<T>
     {
         private readonly MockEngine _engine = new();
         private MethodInfo? _currentMethod;
         private Func<object?[], bool>? _currentPredicate;
 
+        /// <summary>
+        /// Extracts a <see cref="MethodCallExpression"/> from an expression if present.
+        /// </summary>
+        /// <param name="expr">Expression to inspect.</param>
+        /// <returns>The inner <see cref="MethodCallExpression"/> or <c>null</c> when not found.</returns>
         private static MethodCallExpression? GetMethodCall(Expression expr)
         {
             if (expr is MethodCallExpression mce) return mce;
@@ -33,7 +41,6 @@ namespace Zentient.Testing.Internal
 
             _currentMethod = mce.Method;
 
-            // Minimal support: treat any It.IsAny<T>() as wildcard.
             ReadOnlyCollection<Expression> args = mce.Arguments;
             _currentPredicate = callArgs =>
             {
@@ -62,6 +69,7 @@ namespace Zentient.Testing.Internal
             return this;
         }
 
+        /// <inheritdoc/>
         public IMockBuilder<T> Given(Expression<Action<T>> expression)
         {
             ArgumentNullException.ThrowIfNull(expression);
@@ -138,7 +146,11 @@ namespace Zentient.Testing.Internal
             return this;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Builds the mock instance and returns a verifier that can be used to assert calls.
+        /// </summary>
+        /// <param name="verifier">Outputs a verifier instance for the built mock.</param>
+        /// <returns>A proxy instance implementing <typeparamref name="T"/> that delegates calls to the configured mock engine.</returns>
         public T Build(out IMockVerifier<T> verifier)
         {
             T proxy = ProxyGenerator.CreateProxyInstance<T>(_engine);

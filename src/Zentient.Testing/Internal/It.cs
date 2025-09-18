@@ -1,4 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// <copyright file="It.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System.Diagnostics.CodeAnalysis;
 
 namespace Zentient.Testing.Internal
 {

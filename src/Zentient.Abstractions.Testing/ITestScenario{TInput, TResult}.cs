@@ -1,4 +1,8 @@
-﻿namespace Zentient.Abstractions.Testing
+﻿// <copyright file="ITestScenario{TInput, TResult}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
 {
     /// <summary>
     /// Represents a test scenario for arranging, acting and asserting results.

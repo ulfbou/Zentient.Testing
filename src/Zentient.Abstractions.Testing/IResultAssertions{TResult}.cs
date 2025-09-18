@@ -1,4 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿// <copyright file="IResultAssertions{TResult}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System.Linq.Expressions;
 
 namespace Zentient.Abstractions.Testing
 {
