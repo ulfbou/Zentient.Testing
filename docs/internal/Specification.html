@@ -1,0 +1,425 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Zentient.Testing — Staged Implementation Specification (Alpha → Beta → RC → 1.0) | Zentient.Abstractions API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Zentient.Testing — Staged Implementation Specification (Alpha → Beta → RC → 1.0) | Zentient.Abstractions API Reference ">
+      
+      
+      <link rel="icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../public/docfx.min.css">
+      <link rel="stylesheet" href="../../public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="../../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/internal/Specification.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../../index.html">
+            <img id="logo" class="svg" src="../../logo.svg" alt="Zentient.Abstractions">
+            Zentient.Abstractions
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="zentienttesting--staged-implementation-specification-alpha--beta--rc--10">Zentient.Testing — Staged Implementation Specification (Alpha → Beta → RC → 1.0)</h1>
+
+<p>Below is a complete, implementer-focused specification for each staged release of Zentient.Testing. It enables engineers to implement the library end-to-end without waiting for additional design decisions. This document provides precise class/interface names, method signatures (described), constructor responsibilities, invariants, implementation steps, tests to write, CI/packaging steps, and acceptance criteria for each stage.</p>
+<hr>
+<h2 id="overview--guiding-principles-all-stages">Overview / Guiding Principles (All Stages)</h2>
+<ul>
+<li><strong>DX-first</strong>: APIs should be terse, discoverable, and read like Arrange → Act → Assert. Defaults must be sensible; advanced options are opt-in.</li>
+<li><strong>Non-invasive</strong>: Public API should not expose concrete DI/mocking framework types. Use adapter patterns and abstractions.</li>
+<li><strong>Test-scoped isolation</strong>: Each test gets its own harness instance; resources registered by a harness are disposed when the harness is disposed.</li>
+<li><strong>Fail-fast diagnostics</strong>: Developer-facing exceptions should be descriptive and actionable.</li>
+<li><strong>Progressive enhancement</strong>: Start small (alpha), then add DI and adapters (beta), then analyzers and advanced diagnostics (RC), then polish and ecosystem adapters (1.0).</li>
+</ul>
+<hr>
+<h2 id="common-naming--packaging-conventions-all-stages">Common Naming &amp; Packaging Conventions (All Stages)</h2>
+<ul>
+<li><p><strong>Root NuGet</strong>: <code>Zentient.Testing</code> (alpha; gradually add modular packages).</p>
+</li>
+<li><p><strong>Recommended Subpackages</strong>:</p>
+<ul>
+<li><code>Zentient.Testing.Abstractions</code> — all public interfaces and minimal DTOs (always)</li>
+<li><code>Zentient.Testing.Internal</code> — default implementations (alpha/beta)</li>
+<li><code>Zentient.Testing.Adapters.Moq</code> — Moq adapter (beta)</li>
+<li><code>Zentient.Testing.Hosting.MicrosoftDi</code> — Microsoft DI adapter (beta)</li>
+<li><code>Zentient.Testing.Diagnostics</code> — extended diagnostics (RC)</li>
+<li><code>Zentient.Testing.Analyzers</code> — Roslyn analyzer pack (RC/1.0)</li>
+</ul>
+</li>
+<li><p>Namespaces mirror packages. Interfaces begin with <code>I</code>. Keep classes small and single-responsibility.</p>
+</li>
+</ul>
+<hr>
+<h2 id="alpha-01x--core-dsl-and-harness-without-platform-di">ALPHA (0.1.x) — Core DSL and Harness WITHOUT Platform DI</h2>
+<p><strong>Goal</strong>: Validate the Arrange → Act → Assert flow, runtime ergonomics, and the mocking DSL without depending on Zentient.DependencyInjection.</p>
+<h3 id="implementer-surface">Implementer Surface</h3>
+<p><strong>Public contracts (in Zentient.Testing.Abstractions):</strong></p>
+<ul>
+<li><code>ITestScenario&lt;TInput, TResult&gt;</code>
+<ul>
+<li><code>Arrange(Action&lt;ITestHarnessBuilder&gt; configure)</code> — zero or more configure actions (idempotent: multiple calls append)</li>
+<li><code>ActAsync(TInput input, CancellationToken ct = default)</code> — invokes SUT using harness resolution rules; returns <code>Task&lt;TResult&gt;</code></li>
+<li><code>Assert(Action&lt;IResultAssertions&lt;TResult&gt;&gt; assertions)</code> — runs sync assertions on the <code>TResult</code></li>
+</ul>
+</li>
+<li><code>ITestHarnessBuilder</code>
+<ul>
+<li><code>WithDependency&lt;TService&gt;(TService instance)</code> — register concrete instance local to harness</li>
+<li><code>WithMock&lt;TService&gt;(Action&lt;IMockBuilder&lt;TService&gt;&gt; configure)</code> — configure a mock with the built-in mock engine (alpha: minimal stub)</li>
+<li><code>Replace&lt;TService&gt;(TService instance)</code> — explicit replace semantics</li>
+<li><code>Build()</code> — returns <code>ITestHarness</code> (private/impl type or small resolver; for alpha, a lightweight resolver local to harness)</li>
+</ul>
+</li>
+<li><code>IMockBuilder&lt;TService&gt;</code> — DSL:
+<ul>
+<li><code>Given(Expression&lt;Func&lt;TService, object&gt;&gt; call)</code> — identify method/property call to stub</li>
+<li><code>ThenReturns(object result)</code> — return specified value</li>
+<li><code>ThenThrows(Exception ex)</code> — throw when called</li>
+</ul>
+</li>
+<li><code>IResultAssertions&lt;TResult&gt;</code>
+<ul>
+<li><code>NotBeNull()</code></li>
+<li><code>HaveValue(TResult expected)</code></li>
+<li><code>With&lt;TProperty&gt;(Expression&lt;Func&lt;TResult, TProperty&gt;&gt; selector, TProperty expected)</code></li>
+<li><code>And</code> chaining</li>
+</ul>
+</li>
+</ul>
+<p><strong>Internal type <code>ITestHarness</code> (impl-only):</strong></p>
+<ul>
+<li>Small, per-test service registry that maps service type → instance (singleton-in-test). Not a full DI container.</li>
+</ul>
+<h3 id="default-behaviors--conventions">Default Behaviors / Conventions</h3>
+<ul>
+<li><strong>SUT resolution</strong>: Prefer harness-registered instance. Otherwise, construct via reflection if constructor parameters are all registered. Otherwise, throw descriptive exception.</li>
+<li><strong>Mocks</strong>: Tiny, internal mock engine: maps expressions to behaviors, returns configured values or throws. Provide simple <code>Verify</code> method on mock builder (not enforced).</li>
+<li><strong>Contexts</strong>: Contextual data via <code>WithDependency&lt;TContext&gt;(contextInstance)</code> (no typed IContext in alpha).</li>
+</ul>
+<h3 id="implementation-tasks-alpha">Implementation Tasks (Alpha)</h3>
+<ol>
+<li><p><strong>Create abstractions project.</strong></p>
+<ul>
+<li>Add interfaces above, with XML docs.</li>
+</ul>
+</li>
+<li><p><strong>Implement harness (Impl project).</strong></p>
+<ul>
+<li>Implement <code>TestScenario&lt;THandler, TInput, TResult&gt;</code> factory.</li>
+<li>Implement <code>TestHarnessBuilder</code> with internal dictionary <code>Type → object</code>.</li>
+<li><code>Build()</code> returns <code>TestHarness</code> (internal), which provides <code>Resolve&lt;T&gt;() : T</code>.</li>
+</ul>
+</li>
+<li><p><strong>Implement small mock engine.</strong></p>
+<ul>
+<li>Minimal expression parser, store behaviors in a dictionary.</li>
+</ul>
+</li>
+<li><p><strong>Assertions implementation.</strong></p>
+<ul>
+<li>Implement <code>ResultAssertions&lt;TResult&gt;</code> using test-runner-friendly approach.</li>
+</ul>
+</li>
+<li><p><strong>Example tests and docs.</strong></p>
+<ul>
+<li>Show Arrange/Act/Assert flows with dependencies and mocks.</li>
+</ul>
+</li>
+<li><p><strong>Unit tests for the library itself.</strong></p>
+<ul>
+<li>Test harness build/dispose, SUT resolution, mock DSL, assertions.</li>
+</ul>
+</li>
+</ol>
+<h3 id="ci--packaging-alpha">CI / Packaging (Alpha)</h3>
+<ul>
+<li>Single library package <code>Zentient.Testing</code> (Abstractions + Impl).</li>
+<li>CI steps: run unit tests, build NuGet package (<code>0.1.0-alpha.*</code>), push to feed.</li>
+</ul>
+<h3 id="acceptance-criteria-alpha">Acceptance Criteria (Alpha)</h3>
+<ul>
+<li><code>ITestScenario</code> flows compile/run without external DI dependencies.</li>
+<li>Mocks can be configured to return/throw.</li>
+<li>SUT resolution works for simple constructors; failure case includes actionable error.</li>
+</ul>
+<hr>
+<h2 id="beta-02x--add-zentientdependencyinjection-integration-adapters--basic-diagnostics">BETA (0.2.x) — Add Zentient.DependencyInjection Integration, Adapters &amp; Basic Diagnostics</h2>
+<p><strong>Goal</strong>: Introduce the real DI surface (via adapters), enable DI diagnostics in tests.</p>
+<p><strong>Precondition</strong>: Zentient.DependencyInjection available as an upstream package (preferred) or create an internal shim.</p>
+<h3 id="implementer-surface-1">Implementer Surface</h3>
+<p><strong>Abstractions (augmented):</strong></p>
+<ul>
+<li>Keep <code>Zentient.Testing.Abstractions</code> stable from alpha.</li>
+<li>Add small interfaces/types referencing Zentient DI contracts (do not duplicate types; reference them).</li>
+<li><code>ITestHarnessBuilder</code> now gains:
+<ul>
+<li><code>ConfigureServices(Action&lt;IServiceRegistrationBuilder&gt; configure)</code></li>
+<li><code>WithContext&lt;TContextDefinition&gt;(IContext&lt;TContextDefinition&gt; context)</code></li>
+</ul>
+</li>
+<li><code>ITestHarnessBuilder.Build()</code> returns <code>IServiceResolver</code> or a thin wrapper.</li>
+</ul>
+<p><strong>Add <code>IMockAdapter</code> abstraction:</strong></p>
+<ul>
+<li><code>CreateMock&lt;TService&gt;() : IMockBuilder&lt;TService&gt;</code></li>
+<li><code>GetInstance&lt;TService&gt;(IMockBuilder&lt;TService&gt; builder) : object</code></li>
+</ul>
+<p><strong>Hosting adapters:</strong></p>
+<ul>
+<li>Implement <code>Zentient.Testing.Hosting.MicrosoftDi</code>:
+<ul>
+<li>Maps harness builder calls to <code>IServiceRegistrationBuilder</code>.</li>
+<li><code>Build()</code> materializes an <code>IServiceResolver</code> that wraps the container.</li>
+</ul>
+</li>
+<li>Optionally implement a simple container for minimal DI semantics.</li>
+</ul>
+<p><strong>Mock adapters:</strong></p>
+<ul>
+<li><code>Zentient.Testing.Adapters.Moq</code>:
+<ul>
+<li>Implements <code>IMockAdapter</code> using Moq.</li>
+<li>Provide <code>UseMoq()</code> extension method.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Diagnostics &amp; validation:</strong></p>
+<ul>
+<li>Integrate <code>IServiceValidator</code> from Zentient.DependencyInjection.</li>
+<li>Expose <code>IDiagnosticsAssertions</code> to allow test assertions on DI graph.</li>
+<li>Harness can run validation automatically during <code>Build()</code> if enabled.</li>
+</ul>
+<h3 id="implementation-tasks-beta">Implementation Tasks (Beta)</h3>
+<ol>
+<li>Reference Zentient.DependencyInjection contracts or provide a temporary shim.</li>
+<li>Extend <code>HarnessBuilder</code> to use <code>IContainerBuilder</code>.</li>
+<li>Implement Microsoft DI adapter.</li>
+<li>Implement Moq adapter.</li>
+<li>Add diagnostics layer (<code>ITestHarnessBuilder.Diagnostics</code>, <code>IDiagnosticsAssertions</code>).</li>
+<li>Create integration tests (harness + adapters + diagnostics).</li>
+</ol>
+<h3 id="ci--packaging-beta">CI / Packaging (Beta)</h3>
+<ul>
+<li>Split packages: <code>Zentient.Testing</code>, <code>Zentient.Testing.Adapters.Moq</code>, <code>Zentient.Testing.Hosting.MicrosoftDi</code>.</li>
+<li>CI: unit/integration tests, build sample projects, package artifacts, publish to preview feed.</li>
+</ul>
+<h3 id="acceptance-criteria-beta">Acceptance Criteria (Beta)</h3>
+<ul>
+<li><code>ITestScenario</code> builds/uses real DI via adapter.</li>
+<li>Mocks created by adapter are injected.</li>
+<li>Diagnostics endpoints provide registration maps and validations.</li>
+<li>Example repo demonstrates typed context, mock, and DI-hosted SUT.</li>
+</ul>
+<hr>
+<h2 id="release-candidate--stabilization-09x--analyzers-strong-diagnostics-ergonomics">RELEASE CANDIDATE / STABILIZATION (0.9.x) — Analyzers, Strong Diagnostics, Ergonomics</h2>
+<p><strong>Goal</strong>: Stabilize API, add Roslyn analyzers, advanced diagnostics, and developer ergonomics.</p>
+<h3 id="implementer-surface-2">Implementer Surface</h3>
+<ul>
+<li><strong>API finalization</strong>: Freeze public API, document compatibility rules.</li>
+<li><strong>Advanced diagnostics &amp; statistics</strong>:
+<ul>
+<li><code>IRegistrationStatistics</code> (counts by lifetime/type).</li>
+<li><code>IDependencyGraphAnalysis</code> (topological ordering, cycles, depth).</li>
+<li>Harness <code>Snapshot()</code> and <code>Diff(snapshot)</code> features.</li>
+</ul>
+</li>
+<li><strong>Harness options</strong>: <code>AutoValidateOnBuild</code>, <code>ValidateOnAct</code>, configurable via static config or builder.</li>
+<li><strong>Roslyn Analyzers</strong>: (in <code>Zentient.Testing.Analyzers</code>)
+<ul>
+<li>Detect missing await, missing context, mocks after Act, DI lifetime mismatches.</li>
+<li>Provide code fixes.</li>
+</ul>
+</li>
+<li><strong>Performance &amp; resiliency</strong>: Resolver performance for many tests, harden disposal semantics.</li>
+<li><strong>Documentation &amp; examples</strong>: Cookbook, migration notes, best practices, sample repo (xUnit &amp; NUnit).</li>
+</ul>
+<h3 id="implementation-tasks-rc">Implementation Tasks (RC)</h3>
+<ol>
+<li>Finalize API, XML docs.</li>
+<li>Implement statistics and snapshot/diff.</li>
+<li>Build/test analyzers and code-fix providers.</li>
+<li>Cross-platform CI.</li>
+<li>Performance benchmarks.</li>
+</ol>
+<h3 id="ci--packaging-rc">CI / Packaging (RC)</h3>
+<ul>
+<li>Pack/sign packages.</li>
+<li>Staged release channel.</li>
+<li>Publish analyzers separately.</li>
+</ul>
+<h3 id="acceptance-criteria-rc">Acceptance Criteria (RC)</h3>
+<ul>
+<li>Public API is frozen.</li>
+<li>Analyzers detect/fix patterns.</li>
+<li>Diagnostics reliable; snapshot/diff accurate.</li>
+<li>Cross-platform CI green.</li>
+</ul>
+<hr>
+<h2 id="stable-100--production-ready-full-alignment-with-zentientdependencyinjection">STABLE (1.0.0) — Production-Ready, Full Alignment with Zentient.DependencyInjection</h2>
+<p><strong>Goal</strong>: Deliver a robust, mature, and extensible testing ecosystem.</p>
+<h3 id="implementer-surface-3">Implementer Surface</h3>
+<ul>
+<li><strong>Final features</strong>:
+<ul>
+<li>Full set of adapters: Moq, NSubstitute, FakeItEasy, etc.</li>
+<li>Hosting adapters: Microsoft DI, Autofac, etc.</li>
+<li>Decorators/interceptors: <code>WithDecorator&lt;TService, TDecorator&gt;()</code>, <code>WithInterceptor&lt;TService, TInterceptor&gt;()</code>.</li>
+<li>Advanced metadata assertions.</li>
+<li>Optional runtime UI/console diagnostics for failing tests.</li>
+</ul>
+</li>
+<li><strong>Security &amp; maintenance</strong>: Harden dependencies, provide LTS policy, SemVer commitment.</li>
+<li><strong>Community &amp; extensibility</strong>: Contributor guide, extension API docs, template repo.</li>
+</ul>
+<h3 id="implementation-tasks-10">Implementation Tasks (1.0)</h3>
+<ol>
+<li>Implement/publish all hosting and mocking adapters.</li>
+<li>Add decorator/interceptor APIs.</li>
+<li>Polish docs/changelogs/guides.</li>
+<li>Coordinate release of Zentient.DependencyInjection stable.</li>
+</ol>
+<h3 id="ci--packaging-10">CI / Packaging (1.0)</h3>
+<ul>
+<li>Semantic versioning, release notes.</li>
+<li>Multi-targeting to .NET LTS.</li>
+<li>Single-using experience: recommend <code>Zentient.Testing</code> and <code>TestScenario.For&lt;...&gt;()</code>.</li>
+</ul>
+<h3 id="acceptance-criteria-10">Acceptance Criteria (1.0)</h3>
+<ul>
+<li>Consumers can write tests for complex DI graphs, decorators, interceptors with minimal ceremony.</li>
+<li>All analyzers/diagnostics are stable.</li>
+<li>Clean package graph for enterprise.</li>
+</ul>
+<hr>
+<h2 id="per-stage-testing-matrix">Per-Stage Testing Matrix</h2>
+<ul>
+<li><strong>Alpha</strong>: Harness dictionary semantics, SUT resolution, mock engine, integration flows.</li>
+<li><strong>Beta</strong>: All alpha tests, container-backed harness, diagnostics, contract tests.</li>
+<li><strong>RC</strong>: Analyzer unit tests, snapshot/diff, performance.</li>
+<li><strong>1.0</strong>: Multi-target integration, interoperability, security/fuzz.</li>
+</ul>
+<hr>
+<h2 id="developer-ergonomics--examples">Developer Ergonomics &amp; Examples</h2>
+<p>Implement and test these example patterns:</p>
+<ol>
+<li><strong>Simple unit handler (alpha)</strong>: WithDependency for repository, WithMock for service, ActAsync, assert result.</li>
+<li><strong>DI-backed handler with context (beta)</strong>: Typed context registration, <code>UseMicrosoftDi</code>, assert context/repository in handler.</li>
+<li><strong>Mock injection via adapter (beta)</strong>: WithMock using adapter DSL, build harness, resolve SUT, run assert.</li>
+<li><strong>DI validation use-case (beta/RC)</strong>: Create circular dependency, call ValidateDi, assert failure.</li>
+</ol>
+<hr>
+<h2 id="backwards-compatibility--migration-strategy">Backwards Compatibility &amp; Migration Strategy</h2>
+<ul>
+<li><strong>Alpha → Beta</strong>: Keep alpha APIs. Add new methods as optional, provide compatibility shims.</li>
+<li><strong>Beta → RC</strong>: Freeze API, communicate deprecation, provide codemods.</li>
+<li><strong>RC → 1.0</strong>: Only opt-in enhancements or critical fixes.</li>
+</ul>
+<hr>
+<h2 id="documentation-and-onboarding">Documentation and Onboarding</h2>
+<ul>
+<li><strong>Each stage</strong>: Publish quickstart, cookbook, adapter guide, diagnostics reference, migration guide.</li>
+<li><strong>Example projects</strong>: xUnit &amp; NUnit, aligned with docs.</li>
+</ul>
+<hr>
+<h2 id="cicd--release-process">CI/CD &amp; Release Process</h2>
+<ul>
+<li><strong>Alpha</strong>: Unit tests → package → preview feed.</li>
+<li><strong>Beta</strong>: Unit + integration tests, semantic pre-release, preview feed, RC artifacts.</li>
+<li><strong>RC</strong>: Full test matrix, analyzer tests, performance, sign/tag.</li>
+<li><strong>Release</strong>: Coordinate with Zentient.DependencyInjection, publish 1.0.0.</li>
+</ul>
+<hr>
+<h2 id="security-licensing-and-contribution">Security, Licensing, and Contribution</h2>
+<ul>
+<li>MIT license (or agreed OSS); document CLA if needed.</li>
+<li>Pin third-party dependencies, scan with SCA tools.</li>
+<li>Accept adapter contributions, template PR checks.</li>
+</ul>
+<hr>
+<h2 id="roadmap-summary">Roadmap Summary</h2>
+<ul>
+<li><strong>0.1.x (Alpha)</strong>: Core DSL, harness, tiny mock engine, example repo.</li>
+<li><strong>0.2.x (Beta)</strong>: DI integration, Moq adapter, diagnostics, validation.</li>
+<li><strong>0.9.x (RC)</strong>: Analyzers, snapshots, stats, docs.</li>
+<li><strong>1.0.0</strong>: Multiple adapters, decorators/interceptors, polished diagnostics, full alignment with Zentient.DependencyInjection stable.</li>
+</ul>
+<hr>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/internal/Specification.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

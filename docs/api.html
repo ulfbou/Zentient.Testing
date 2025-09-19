@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>API Reference � Zentient.Testing (Alpha) | Zentient.Abstractions API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="API Reference � Zentient.Testing (Alpha) | Zentient.Abstractions API Reference ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/api.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Zentient.Abstractions">
+            Zentient.Abstractions
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="api-reference--zentienttesting-alpha">API Reference � Zentient.Testing (Alpha)</h1>
+
+<p>This document merges the API overview and reference for the alpha release. It describes the public abstractions provided by <strong>Zentient.Abstractions.Testing</strong>, their responsibilities, and short usage examples.</p>
+<h2 id="overview">Overview</h2>
+<p>The alpha API is deliberately small. Target interfaces:</p>
+<ul>
+<li><strong>ITestScenario&lt;TInput, TResult&gt;</strong> � orchestrates Arrange ? Act ? Assert for a handler or SUT.</li>
+<li><strong>ITestHarnessBuilder</strong> � builder API used during Arrange to register dependencies and mocks.</li>
+<li><strong>IMockBuilder<tservice></tservice></strong> � minimal mock DSL for configuring behaviors.</li>
+<li><strong>IResultAssertions<tresult></tresult></strong> � assertion helpers used by scenario.Assert.</li>
+</ul>
+<h2 id="interfaces">Interfaces</h2>
+<h3 id="itestscenariotinput-tresult">ITestScenario&lt;TInput, TResult&gt;</h3>
+<p>Purpose: Encapsulate a unit test scenario for a handler or SUT and provide the fluent test lifecycle.</p>
+<p>Members:</p>
+<ul>
+<li>Arrange(Action<itestharnessbuilder> configure)</itestharnessbuilder></li>
+<li>Task<tresult> ActAsync(TInput input, CancellationToken ct = default)</tresult></li>
+<li>Assert(Action&lt;IResultAssertions<tresult>&gt; assertions)</tresult></li>
+</ul>
+<p>Example:</p>
+<pre><code class="lang-csharp">var scenario = TestScenario.ForHandler&lt;MyHandler, MyInput, MyResult&gt;((h,input,ct) =&gt; Task.FromResult(h.Handle(input)));
+scenario.Arrange(builder =&gt; builder.WithDependency(...));
+var result = await scenario.ActAsync(...);
+scenario.Assert(a =&gt; a.NotBeNull());
+</code></pre>
+<hr>
+<h3 id="itestharnessbuilder">ITestHarnessBuilder</h3>
+<p>Purpose: Provide test-scoped registration APIs for dependencies and mocks.</p>
+<p>Common methods:</p>
+<ul>
+<li>WithDependency<tservice>(TService instance)</tservice></li>
+<li>WithMock<tservice>(Action&lt;IMockBuilder<tservice>&gt; configure)</tservice></tservice></li>
+<li>Replace<tservice>(TService instance)</tservice></li>
+<li>Build()</li>
+</ul>
+<p>Notes: For the alpha, Build returns an internal TestHarness that resolves types either from registrations or by construction when possible.</p>
+<hr>
+<h3 id="imockbuilder">IMockBuilder<tservice></tservice></h3>
+<p>Purpose: Configure simple stubs for a service type.</p>
+<p>API surface (alpha):</p>
+<ul>
+<li>Given(Expression&lt;Func&lt;TService, object&gt;&gt; call)</li>
+<li>ThenReturns(object result)</li>
+<li>ThenThrows(Exception ex)</li>
+</ul>
+<p>Example:</p>
+<pre><code class="lang-csharp">builder.WithMock&lt;ICalc&gt;(m =&gt; m.Given(x =&gt; x.Add(It.IsAny&lt;int&gt;(), It.IsAny&lt;int&gt;())).ThenReturns(42));
+</code></pre>
+<hr>
+<h3 id="iresultassertions">IResultAssertions<tresult></tresult></h3>
+<p>Purpose: Provide a focused set of assertion helpers used inside scenario.Assert.</p>
+<p>Helpers (alpha):</p>
+<ul>
+<li>NotBeNull()</li>
+<li>HaveValue(TResult expected)</li>
+<li>With<tproperty>(Expression&lt;Func&lt;TResult, TProperty&gt;&gt; selector, TProperty expected)</tproperty></li>
+<li>And (chaining)</li>
+</ul>
+<p>Example:</p>
+<pre><code class="lang-csharp">scenario.Assert(a =&gt; a.With(r =&gt; r.Value, 42).And.NotBeNull());
+</code></pre>
+<h2 id="guidance--migration-notes">Guidance &amp; Migration Notes</h2>
+<ul>
+<li>Code against the abstractions, not concrete implementations, to simplify future adapter work.</li>
+<li>Expect small API additions in beta; core shapes should remain stable for adapter integration.</li>
+</ul>
+<h2 id="where-to-find-more">Where to find more</h2>
+<ul>
+<li>See docs/usage-examples.md for copy-pasteable examples.</li>
+<li>For packaging and CI, refer to docs/packaging.md and the GitHub Actions workflow.</li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/api.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

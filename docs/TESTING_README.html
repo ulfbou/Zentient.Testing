@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Zentient.Testing — Alpha Quickstart | Zentient.Abstractions API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Zentient.Testing — Alpha Quickstart | Zentient.Abstractions API Reference ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/TESTING_README.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Zentient.Abstractions">
+            Zentient.Abstractions
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="zentienttesting--alpha-quickstart">Zentient.Testing — Alpha Quickstart</h1>
+
+<p>This document shows how to use the lightweight Zentient.Testing harness and mock APIs in the alpha release.</p>
+<h2 id="arrange--act--assert">Arrange → Act → Assert</h2>
+<p>Example:</p>
+<pre><code class="lang-csharp">var scenario = TestScenario.ForHandler&lt;MyHandler, (int a, int b), int&gt;((h, input, ct) =&gt; Task.FromResult(h.Handle(input)));
+
+scenario.Arrange(builder =&gt;
+{
+    builder.WithMock&lt;ICalculator&gt;(mb =&gt; mb.Given(x =&gt; x.Add(It.IsAny&lt;int&gt;(), It.IsAny&lt;int&gt;())).ThenReturns(42));
+});
+
+int result = await scenario.ActAsync((1, 2));
+scenario.Assert(a =&gt; a.HaveValue(42));
+</code></pre>
+<h2 id="fluentassertions-license-note">FluentAssertions license note</h2>
+<p>This repository includes tests that use FluentAssertions. FluentAssertions is published under the Xceed Fluent Assertions Community License. The project is free for non-commercial use. If you plan to use these tests in a commercial product or CI environment for a proprietary code base, please review the FluentAssertions licensing terms and obtain a commercial license if required: <a href="https://xceed.com/products/unit-testing/fluent-assertions/">https://xceed.com/products/unit-testing/fluent-assertions/</a></p>
+<h2 id="nullability">Nullability</h2>
+<p>The alpha APIs aim to provide nullable-aware signatures for common operations. <code>ThenReturns(object? result)</code> accepts null when configuring void-returning methods in the minimal mock DSL.</p>
+<h2 id="recommended-test-additions-for-alpha">Recommended test additions for alpha</h2>
+<ul>
+<li>Add tests for behaviour priority and multiple matching rules.</li>
+<li>Test exception throwing from ThenThrows.</li>
+<li>Test async handlers and Task-returning methods.</li>
+</ul>
+<p>These are already partly implemented in the example tests included in <code>tests/</code>.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/TESTING_README.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,239 @@
+{
+  "source_base_path": "/home/runner/work/Zentient.Testing/Zentient.Testing",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "CHANGELOG.md",
+      "output": {
+        ".html": {
+          "relative_path": "CHANGELOG.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "CODE_OF_CONDUCT.md",
+      "output": {
+        ".html": {
+          "relative_path": "CODE_OF_CONDUCT.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "README.md",
+      "output": {
+        ".html": {
+          "relative_path": "README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/TESTING_README.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/TESTING_README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/alfa-release-notes.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/alfa-release-notes.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/api-reference.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/api-reference.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/api.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/api.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/architecture.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/architecture.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/design-principles.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/design-principles.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/README.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/Specification.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/Specification.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/Zentient.Expressions.Api.0.1.0-alfa.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/Zentient.Expressions.Api.0.1.0-alfa.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/_includes/aside.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/_includes/aside.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/acceptance-criteria.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/acceptance-criteria.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/api-reference-alfa.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/api-reference-alfa.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/contributing.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/contributing.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/release-notes-alfa.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/release-notes-alfa.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/internal/roadmap.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/internal/roadmap.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/overview.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/usage-examples.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/usage-examples.html"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Getting Started — Zentient.Testing (Alpha) | Zentient.Abstractions API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Getting Started — Zentient.Testing (Alpha) | Zentient.Abstractions API Reference ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/getting-started.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Zentient.Abstractions">
+            Zentient.Abstractions
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="getting-started--zentienttesting-alpha">Getting Started — Zentient.Testing (Alpha)</h1>
+
+<p>This quick guide helps you add Zentient.Testing to a project, write a simple scenario-based test, and run local validation for build/test/pack.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>.NET 8 SDK or later (the project also targets .NET 9).</li>
+<li>Optional: a unit test runner (xUnit is used in this repository for discovery).</li>
+</ul>
+<h2 id="install">Install</h2>
+<p>Add the package from your NuGet feed (replace version as needed):</p>
+<pre><code class="lang-bash">dotnet add package Zentient.Testing --version 0.1.0-alpha
+</code></pre>
+<p>Or add the project reference if working from source:</p>
+<pre><code class="lang-bash">dotnet add &lt;your-test-project&gt; reference &lt;path-to&gt;/src/Zentient.Testing/Zentient.Testing.csproj
+</code></pre>
+<h2 id="write-a-simple-test">Write a simple test</h2>
+<p>Example using a handler-style SUT:</p>
+<pre><code class="lang-csharp">[Fact]
+public async Task AdderHandler_ReturnsConfiguredMockValue()
+{
+    var scenario = TestScenario.ForHandler&lt;AdderHandler,(int a,int b),int&gt;((h,input,ct) =&gt; Task.FromResult(h.Handle(input)));
+
+    scenario.Arrange(builder =&gt; {
+        builder.WithMock&lt;ICalculator&gt;(mb =&gt; mb.Given(x =&gt; x.Add(It.IsAny&lt;int&gt;(), It.IsAny&lt;int&gt;())).ThenReturns(100));
+    });
+
+    var result = await scenario.ActAsync((1,2));
+
+    scenario.Assert(a =&gt; a.With(r =&gt; r, 100));
+}
+</code></pre>
+<h2 id="run-tests">Run tests</h2>
+<p>Run tests using your preferred test runner. Example with <code>dotnet test</code>:</p>
+<pre><code class="lang-bash">dotnet test
+</code></pre>
+<p>Note: This repository uses xUnit for test discovery. The final product may ship adapters that remove the direct need for xUnit in the test project in a later release.</p>
+<h2 id="local-ci-style-validation-build--test--pack">Local CI-style validation (build → test → pack)</h2>
+<p>A convenience script is provided to validate the repository locally, performing build, test and pack steps.</p>
+<pre><code class="lang-powershell">..\ulfbou\scripts\validate.ps1
+</code></pre>
+<p>The script will:</p>
+<ul>
+<li>Load environment variables from <code>../.env</code> if present.</li>
+<li>Build all <code>src/</code> projects.</li>
+<li>Build and run tests in <code>tests/</code>.</li>
+<li>Pack any project with <code>&lt;IsPackable&gt;true&lt;/IsPackable&gt;</code> into <code>artifacts/</code>.</li>
+<li>Attempt to sign packages if <code>SIGNING_KEY</code> is present in the environment.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li>If dotnet test cannot discover tests, ensure the test project references an appropriate test SDK (e.g., Microsoft.NET.Test.Sdk &amp; xUnit runner) or use the provided validate.ps1 which builds projects before invoking tests.</li>
+<li>If packaging fails due to missing README.md, ensure <code>README.md</code> exists at the repository root; packaging expects this file to be included in nupkg.</li>
+</ul>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li>Read the API Reference: <code>docs/api.md</code>.</li>
+<li>Explore example scenarios: <code>docs/usage-examples.md</code>.</li>
+<li>Review packaging guidance: <code>docs/packaging.md</code>.</li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/getting-started.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

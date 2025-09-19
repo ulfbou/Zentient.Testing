@@ -1,0 +1,1537 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title> | Zentient.Abstractions API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content=" | Zentient.Abstractions API Reference ">
+      
+      
+      <link rel="icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../public/docfx.min.css">
+      <link rel="stylesheet" href="../../public/main.css">
+      <meta name="docfx:navrel" content="">
+      <meta name="docfx:tocrel" content="">
+      
+      <meta name="docfx:rel" content="../../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/internal/Zentient.Expressions.Api.0.1.0-alfa.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../../index.html">
+            <img id="logo" class="svg" src="../../logo.svg" alt="Zentient.Abstractions">
+            Zentient.Abstractions
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+<p>===== src/Zentient.Abstractions.Expressions/ExpressionKind.cs =====
+// <copyright file="ExpressionKind.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using System;
+using System.Collections.Generic;
+using System.Globalization;</p>
+<p>namespace Zentient.Abstractions.Expressions
+{
+/// <summary>
+/// Specifies the kind of expression.
+/// </summary>
+public enum ExpressionKind
+{
+/// <summary>
+/// An expression representing a constant value.
+/// </summary>
+Constant,</p>
+<pre><code>    /// &lt;summary&gt;
+    /// An expression representing an identifier.
+    /// &lt;/summary&gt;
+    Identifier,
+
+    /// &lt;summary&gt;
+    /// An expression representing member access.
+    /// &lt;/summary&gt;
+    MemberAccess,
+
+    /// &lt;summary&gt;
+    /// An expression representing a method call.
+    /// &lt;/summary&gt;
+    MethodCall,
+
+    /// &lt;summary&gt;
+    /// An expression representing a lambda expression.
+    /// &lt;/summary&gt;
+    Lambda
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Abstractions.Expressions/IExpression.cs =====
+// <copyright file="IExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Abstractions.Expressions
+{
+/// <summary>
+/// Represents an expression in the Zentient abstraction.
+/// </summary>
+public interface IExpression
+{
+/// <summary>
+/// Gets the kind of the expression.
+/// </summary>
+ExpressionKind Kind { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets the canonical string representation of the expression.
+    /// &lt;/summary&gt;
+    string Canonical { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the operands of the expression.
+    /// &lt;/summary&gt;
+    IReadOnlyList&lt;IExpression&gt; Operands { get; }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Abstractions.Expressions/IExpressionEvaluator.cs =====
+// <copyright file="IExpressionEvaluator.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Abstractions.Expressions
+{
+/// <summary>
+/// Evaluates expressions to obtain their numeric value.
+/// </summary>
+public interface IExpressionEvaluator
+{
+/// <summary>
+/// Evaluates the specified expression in the given context.
+/// </summary>
+/// <param name="expression">The expression to evaluate.
+/// <param name="context">The context in which to evaluate the expression, or <c>null</c> for no context.
+/// <returns>The numeric value of the expression.</returns>
+object? Evaluate(IExpression expression, object? context = null);
+}
+}</p>
+<p>===== src/Zentient.Abstractions.Expressions/IExpressionParser.cs =====
+// <copyright file="IExpressionParser.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Abstractions.Expressions
+{
+/// <summary>
+/// Parses expressions from strings.
+/// </summary>
+public interface IExpressionParser
+{
+/// <summary>
+/// Attempts to parse the input string as an expression.
+/// </summary>
+/// <param name="input">The input string.
+/// <param name="expression">When this method returns, contains the parsed expression if the parse was successful, or <c>null</c> otherwise.
+/// <param name="diagnostics">When this method returns, contains the list of diagnostics produced during parsing.
+/// <returns><c>true</c> if the parse was successful; otherwise, <c>false</c>.</returns>
+bool TryParse(string input, out IExpression? expression, out IReadOnlyList<parsediagnostic> diagnostics);</parsediagnostic></p>
+<pre><code>    /// &lt;summary&gt;
+    /// Parses the input string as an expression.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;input&quot;&gt;The input string.&lt;/param&gt;
+    /// &lt;returns&gt;The parsed expression.&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ParseException&quot;&gt;Thrown if the input string cannot be parsed as an expression.&lt;/exception&gt;
+    IExpression Parse(string input);
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Abstractions.Expressions/ITypedExpression{out T}.cs =====
+// <copyright file="ITypedExpression{out T}.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Abstractions.Expressions
+{
+/// <summary>
+/// Represents a typed expression that can be evaluated to a value of type <typeparamref name="T"></typeparamref>.
+/// </summary>
+/// <typeparam name="T">The type of the value that the expression evaluates to.</typeparam>
+public interface ITypedExpression<out t=""> : IExpression
+{
+/// <summary>
+/// Evaluates the expression in the specified context.
+/// </summary>
+/// <param name="context">The context in which to evaluate the expression, or <c>null</c> for no context.
+/// <returns>The result of the evaluation.</returns>
+T Evaluate(object? context = null);
+}
+}</out></p>
+<p>===== src/Zentient.Abstractions.Expressions/ParseDiagnostic.cs =====
+// <copyright file="ParseDiagnostic.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Abstractions.Expressions
+{
+/// <summary>
+/// Severity for parse diagnostics.
+/// </summary>
+public enum ParseDiagnosticSeverity
+{
+Error,
+Warning,
+Information
+}</p>
+<pre><code>/// &lt;summary&gt;
+/// Represents a diagnostic message produced during parsing.
+/// &lt;/summary&gt;
+/// &lt;param name=&quot;Position&quot;&gt;The position in the input where the diagnostic occurred.&lt;/param&gt;
+/// &lt;param name=&quot;Message&quot;&gt;The diagnostic message.&lt;/param&gt;
+/// &lt;param name=&quot;Severity&quot;&gt;The diagnostic severity (default: Error).&lt;/param&gt;
+public record ParseDiagnostic(int Position, string Message, ParseDiagnosticSeverity Severity = ParseDiagnosticSeverity.Error);
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/ConstantExpression.cs =====
+// <copyright file="ConstantExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using System.Globalization;</p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Represents a literal constant expression.
+/// </summary>
+internal sealed class ConstantExpression : ExpressionBase
+{
+/// <summary>
+/// Gets the constant value represented by this node.
+/// </summary>
+public object? Value { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Creates a new &lt;see cref=&quot;ConstantExpression&quot;/&gt; with the given value.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;value&quot;&gt;The constant value (may be &lt;c&gt;null&lt;/c&gt;).&lt;/param&gt;
+    public ConstantExpression(object? value) =&gt; Value = value;
+
+    /// &lt;inheritdoc /&gt;
+    public override ExpressionKind Kind =&gt; ExpressionKind.Constant;
+
+    /// &lt;inheritdoc /&gt;
+    public override IReadOnlyList&lt;IExpression&gt; Operands =&gt; Array.Empty&lt;IExpression&gt;();
+
+    /// &lt;summary&gt;
+    /// Produces a canonical string representation of the value.
+    /// Strings are quoted and escape sequences are applied; &lt;c&gt;null&lt;/c&gt; renders as &quot;null&quot;.
+    /// &lt;/summary&gt;
+    public override string Canonical
+        =&gt; Value switch
+        {
+            string s =&gt; $&quot;\&quot;{EscapeString(s)}\&quot;&quot;,
+            null =&gt; &quot;null&quot;,
+            _ =&gt; Convert.ToString(Value, CultureInfo.InvariantCulture) ?? &quot;null&quot;
+        };
+
+    // Escape backslash first, then other characters
+    private static string EscapeString(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+        var sb = new System.Text.StringBuilder();
+        foreach (var ch in s)
+        {
+            switch (ch)
+            {
+                case '\\': sb.Append(&quot;\\\\&quot;); break; // backslash =&gt; \\\\ in string literal
+                case '&quot;': sb.Append(&quot;\\\&quot;&quot;); break;   // quote =&gt; \&quot;
+                case '\n': sb.Append(&quot;\\n&quot;); break;
+                case '\r': sb.Append(&quot;\\r&quot;); break;
+                case '\t': sb.Append(&quot;\\t&quot;); break;
+                default:
+                    sb.Append(ch);
+                    break;
+            }
+        }
+        return sb.ToString();
+    }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/ExpressionBase.cs =====
+// <copyright file="ExpressionBase.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Base implementation for expression AST nodes.
+/// </summary>
+internal abstract class ExpressionBase : IExpression
+{
+/// <summary>
+/// Gets the kind of this expression node.
+/// </summary>
+public abstract ExpressionKind Kind { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets a canonical, language-independent representation of this expression node.
+    /// &lt;/summary&gt;
+    public abstract string Canonical { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the child operands of this expression node. Leaf nodes typically return an empty collection.
+    /// &lt;/summary&gt;
+    public virtual IReadOnlyList&lt;IExpression&gt; Operands =&gt; Array.Empty&lt;IExpression&gt;();
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/ExpressionDebugExtensions.cs =====
+// <copyright file="ExpressionDebugExtensions.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Debugging and utility extensions for expressions.
+/// </summary>
+public static class ExpressionDebugExtensions
+{
+/// <summary>
+/// Returns the canonical string representation of the specified expression.
+/// </summary>
+/// <param name="expr">The expression to obtain the canonical representation for.
+/// <returns>A canonical, language-independent string for <paramref name="expr"></paramref>.</returns>
+public static string ToCanonicalString(this IExpression expr)
+=&gt; expr.Canonical;
+}
+}</p>
+<p>===== src/Zentient.Expressions/ExpressionParser.cs =====
+// <copyright file="ExpressionParser.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Internal parsing helpers that produce an <see cref="IExpression"></see> and diagnostics.
+/// </summary>
+internal static class ExpressionParser
+{
+/// <summary>
+/// Attempts to parse <paramref name="input"></paramref> into an <see cref="IExpression"></see> and collects diagnostics.
+/// </summary>
+/// <param name="input">The input expression text to parse.
+/// <param name="expression">When this method returns, contains the parsed expression if parsing succeeded; otherwise <c>null</c>.
+/// <param name="diagnostics">When this method returns, contains a read-only list of diagnostics observed during parsing.
+/// <returns><c>true</c> when parsing succeeded with no diagnostics; otherwise <c>false</c>.</returns>
+public static bool TryParse(
+string input,
+out IExpression? expression,
+out IReadOnlyList<parsediagnostic> diagnostics)
+{
+var diags = new List<parsediagnostic>();</parsediagnostic></parsediagnostic></p>
+<pre><code>        if (string.IsNullOrWhiteSpace(input))
+        {
+            diags.Add(new ParseDiagnostic(0, &quot;Expression is empty or whitespace.&quot;));
+            expression = null;
+            diagnostics = diags;
+            return false;
+        }
+
+        var parser = new Parser(input);
+        var expr = parser.ParseExpression();
+        diags.AddRange(parser.Diagnostics);
+
+        diagnostics = diags;
+
+        if (expr is null || diags.Count &gt; 0)
+        {
+            expression = expr;
+            return false;
+        }
+
+        ExpressionRegistry.RaiseParsed(expr);
+        expression = expr;
+        diagnostics = diags;
+        return true;
+    }
+
+    /// &lt;summary&gt;
+    /// Parses the specified input and returns an &lt;see cref=&quot;IExpression&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;input&quot;&gt;The input expression text to parse.&lt;/param&gt;
+    /// &lt;returns&gt;The parsed expression.&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ArgumentException&quot;&gt;Thrown when parsing fails. The exception message contains concatenated diagnostic messages.&lt;/exception&gt;
+    public static IExpression Parse(string input)
+    {
+        if (!TryParse(input, out var expr, out var diags))
+        {
+            var message = string.Join(&quot;; &quot;, diags.Select(d =&gt; d.Message));
+            throw new ArgumentException($&quot;Failed to parse expression: {message}&quot;);
+        }
+
+        return expr!;
+    }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/ExpressionRegistry.cs =====
+// <copyright file="ExpressionRegistry.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;</p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Central registry that exposes default expression parser and evaluator implementations
+/// and lifecycle events for parsed and evaluated expressions.
+/// </summary>
+/// <remarks>
+/// This static type is thread-safe for replacing the default parser/evaluator and for
+/// subscribing/unsubscribing to events. Consumers may replace the defaults or subscribe
+/// to <see cref="OnParsed"></see> and <see cref="OnEvaluated"></see> to receive notifications.
+/// </remarks>
+public static class ExpressionRegistry
+{
+private static readonly object _sync = new();
+private static IExpressionParser _defaultParser = new DefaultExpressionParser();</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets or sets the default &lt;see cref=&quot;IExpressionParser&quot;/&gt; used by the library.
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;
+    /// Setting the value is thread-safe. Attempting to assign &lt;c&gt;null&lt;/c&gt; will throw
+    /// &lt;see cref=&quot;ArgumentNullException&quot;/&gt;.
+    /// &lt;/remarks&gt;
+    /// &lt;exception cref=&quot;ArgumentNullException&quot;&gt;Thrown when &lt;paramref name=&quot;value&quot;/&gt; is &lt;c&gt;null&lt;/c&gt;.&lt;/exception&gt;
+    public static IExpressionParser DefaultParser
+    {
+        get =&gt; _defaultParser;
+        set
+        {
+            if (value is null) throw new ArgumentNullException(nameof(value));
+            lock (_sync) { _defaultParser = value; }
+        }
+    }
+
+    private static IExpressionEvaluator _defaultEvaluator = new DefaultExpressionEvaluator();
+
+    /// &lt;summary&gt;
+    /// Gets or sets the default &lt;see cref=&quot;IExpressionEvaluator&quot;/&gt; used by the library.
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;
+    /// Setting the value is thread-safe. Attempting to assign &lt;c&gt;null&lt;/c&gt; will throw
+    /// &lt;see cref=&quot;ArgumentNullException&quot;/&gt;.
+    /// &lt;/remarks&gt;
+    /// &lt;exception cref=&quot;ArgumentNullException&quot;&gt;Thrown when &lt;paramref name=&quot;value&quot;/&gt; is &lt;c&gt;null&lt;/c&gt;.&lt;/exception&gt;
+    public static IExpressionEvaluator DefaultEvaluator
+    {
+        get =&gt; _defaultEvaluator;
+        set
+        {
+            if (value is null) throw new ArgumentNullException(nameof(value));
+            lock (_sync) { _defaultEvaluator = value; }
+        }
+    }
+
+    private static Action&lt;IExpression&gt;? _onParsed;
+
+    /// &lt;summary&gt;
+    /// Event raised after an &lt;see cref=&quot;IExpression&quot;/&gt; has been successfully parsed.
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;
+    /// Event handlers will be invoked with the parsed expression. Subscription and
+    /// unsubscription are performed under a lock to ensure thread-safety.
+    /// &lt;/remarks&gt;
+    public static event Action&lt;IExpression&gt; OnParsed
+    {
+        add { lock (_sync) { _onParsed += value; } }
+        remove { lock (_sync) { _onParsed -= value; } }
+    }
+
+    private static Action&lt;IExpression, object?&gt;? _onEvaluated;
+
+    /// &lt;summary&gt;
+    /// Event raised after an &lt;see cref=&quot;IExpression&quot;/&gt; has been evaluated.
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;
+    /// Handlers receive the expression and the evaluation result (which may be &lt;c&gt;null&lt;/c&gt;).
+    /// Subscription and unsubscription are thread-safe.
+    /// &lt;/remarks&gt;
+    public static event Action&lt;IExpression, object?&gt; OnEvaluated
+    {
+        add { lock (_sync) { _onEvaluated += value; } }
+        remove { lock (_sync) { _onEvaluated -= value; } }
+    }
+
+    /// &lt;summary&gt;
+    /// Invokes the &lt;see cref=&quot;OnParsed&quot;/&gt; event for a parsed expression.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;expr&quot;&gt;The parsed expression to publish to subscribers.&lt;/param&gt;
+    internal static void RaiseParsed(IExpression expr)
+        =&gt; _onParsed?.Invoke(expr);
+
+    /// &lt;summary&gt;
+    /// Invokes the &lt;see cref=&quot;OnEvaluated&quot;/&gt; event for an evaluated expression.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;expr&quot;&gt;The expression that was evaluated.&lt;/param&gt;
+    /// &lt;param name=&quot;result&quot;&gt;The result of the evaluation; may be &lt;c&gt;null&lt;/c&gt;.&lt;/param&gt;
+    internal static void RaiseEvaluated(IExpression expr, object? result)
+        =&gt; _onEvaluated?.Invoke(expr, result);
+
+    // Adapter implementations for the public parser/evaluator
+
+    /// &lt;summary&gt;
+    /// Internal adapter that delegates parsing calls to the concrete parser implementation.
+    /// &lt;/summary&gt;
+    private class DefaultExpressionParser : IExpressionParser
+    {
+        /// &lt;inheritdoc /&gt;
+        public bool TryParse(string input, out IExpression? expression, out IReadOnlyList&lt;ParseDiagnostic&gt; diagnostics)
+            =&gt; ExpressionParser.TryParse(input, out expression, out diagnostics);
+
+        /// &lt;inheritdoc /&gt;
+        public IExpression Parse(string input)
+            =&gt; ExpressionParser.Parse(input);
+    }
+
+    /// &lt;summary&gt;
+    /// Internal adapter that delegates evaluation calls to the concrete evaluator implementation.
+    /// &lt;/summary&gt;
+    private class DefaultExpressionEvaluator : IExpressionEvaluator
+    {
+        /// &lt;inheritdoc /&gt;
+        public object? Evaluate(IExpression expression, object? context = null)
+        {
+            var result = StubEvaluator.Evaluate(expression, context);
+            ExpressionRegistry.RaiseEvaluated(expression, result);
+            return result;
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Creates a typed view over an existing expression using the registry's evaluator.
+    /// &lt;/summary&gt;
+    /// &lt;typeparam name=&quot;T&quot;&gt;The expected result type of the expression.&lt;/typeparam&gt;
+    /// &lt;param name=&quot;expr&quot;&gt;The expression to wrap.&lt;/param&gt;
+    /// &lt;returns&gt;An &lt;see cref=&quot;ITypedExpression{T}&quot;/&gt; that evaluates the underlying expression and casts the result to &lt;typeparamref name=&quot;T&quot;/&gt;.&lt;/returns&gt;
+    public static ITypedExpression&lt;T&gt; AsTyped&lt;T&gt;(IExpression expr)
+    {
+        if (expr is null) throw new ArgumentNullException(nameof(expr));
+        return new TypedExpression&lt;T&gt;(expr);
+    }
+
+    // Internal wrapper implementing the typed expression contract.
+    private sealed class TypedExpression&lt;T&gt; : ITypedExpression&lt;T&gt;
+    {
+        private readonly IExpression _inner;
+
+        public TypedExpression(IExpression inner) =&gt; _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+
+        public ExpressionKind Kind =&gt; _inner.Kind;
+
+        public string Canonical =&gt; _inner.Canonical;
+
+        public IReadOnlyList&lt;IExpression&gt; Operands =&gt; _inner.Operands;
+
+        public T Evaluate(object? context = null)
+        {
+            var result = ExpressionRegistry.DefaultEvaluator.Evaluate(_inner, context);
+            if (result is null &amp;&amp; default(T) is null)
+                return (T)result!; // allow null for reference types
+            if (result is T t) return t;
+
+            // Try convert common primitive/numeric types
+            try
+            {
+                var converted = Convert.ChangeType(result, typeof(T));
+                return (T)converted!;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidCastException($&quot;Cannot cast evaluator result of type '{result?.GetType()}' to '{typeof(T)}'.&quot;, ex);
+            }
+        }
+    }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/Extensions.cs =====
+// <copyright file="Extensions.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using System.Collections.Generic;
+using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Extensions.Expressions
+{
+/// <summary>
+/// Ergonomic extension methods for common expression workflows.
+/// </summary>
+public static class Extensions
+{
+/// <summary>
+/// Parses and evaluates the provided expression text using the default registry parser and evaluator.
+/// Returns the evaluation result or throws when parsing fails.
+/// </summary>
+public static object? EvaluateExpression(this string expressionText, object? context = null)
+{
+if (expressionText is null) throw new System.ArgumentNullException(nameof(expressionText));</p>
+<pre><code>        var parser = Zentient.Expressions.ExpressionRegistry.DefaultParser;
+        if (!parser.TryParse(expressionText, out var expr, out var diags))
+        {
+            var msg = string.Join(';', System.Linq.Enumerable.Select(diags, d =&gt; d.Message));
+            throw new System.ArgumentException($&quot;Failed to parse expression: {msg}&quot;);
+        }
+
+        return Zentient.Expressions.ExpressionRegistry.DefaultEvaluator.Evaluate(expr!, context);
+    }
+
+    /// &lt;summary&gt;
+    /// Returns the canonical form of an expression.
+    /// &lt;/summary&gt;
+    public static string ToCanonicalString(this IExpression expr)
+        =&gt; expr?.Canonical ?? string.Empty;
+
+    /// &lt;summary&gt;
+    /// Returns a brief debug string describing the expression kind, operand count, and canonical form.
+    /// &lt;/summary&gt;
+    public static string ToDebugString(this IExpression expr)
+        =&gt; $&quot;Kind={expr.Kind}; Operands={expr.Operands?.Count ?? 0}; Canonical={expr.Canonical}&quot;;
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/IdentifierExpression.cs =====
+// <copyright file="IdentifierExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Represents an identifier (variable or parameter name).
+/// </summary>
+internal sealed class IdentifierExpression : ExpressionBase
+{
+/// <summary>
+/// Gets the identifier name.
+/// </summary>
+public string Name { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Initializes a new instance of &lt;see cref=&quot;IdentifierExpression&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;name&quot;&gt;The identifier name.&lt;/param&gt;
+    public IdentifierExpression(string name) =&gt; Name = name;
+
+    /// &lt;inheritdoc /&gt;
+    public override ExpressionKind Kind =&gt; ExpressionKind.Identifier;
+
+    /// &lt;inheritdoc /&gt;
+    public override IReadOnlyList&lt;IExpression&gt; Operands =&gt; Array.Empty&lt;IExpression&gt;();
+
+    /// &lt;inheritdoc /&gt;
+    public override string Canonical =&gt; Name;
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/LambdaExpression.cs =====
+// <copyright file="LambdaExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Represents a lambda (anonymous function) expression with parameters and a body.
+/// </summary>
+internal sealed class LambdaExpression : ExpressionBase
+{
+/// <summary>
+/// Gets the lambda parameter names.
+/// </summary>
+public IReadOnlyList<string> Parameters { get; }</string></p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets the lambda body expression.
+    /// &lt;/summary&gt;
+    public IExpression Body { get; }
+
+    /// &lt;summary&gt;
+    /// Initializes a new instance of &lt;see cref=&quot;LambdaExpression&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;parameters&quot;&gt;The parameter names used by the lambda.&lt;/param&gt;
+    /// &lt;param name=&quot;body&quot;&gt;The body expression.&lt;/param&gt;
+    public LambdaExpression(IEnumerable&lt;string&gt; parameters, IExpression body)
+        =&gt; (Parameters, Body) = (parameters.ToArray(), body);
+
+    /// &lt;inheritdoc /&gt;
+    public override ExpressionKind Kind =&gt; ExpressionKind.Lambda;
+
+    /// &lt;inheritdoc /&gt;
+    public override IReadOnlyList&lt;IExpression&gt; Operands =&gt; new[] { Body };
+
+    /// &lt;inheritdoc /&gt;
+    public override string Canonical
+        =&gt; $&quot;{string.Join(&quot;, &quot;, Parameters)} =&gt; {Body.Canonical}&quot;;
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/Lexer.cs =====
+// <copyright file="Lexer.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Simple lexer that converts an input source string into a stream of <see cref="Token"></see> instances.
+/// </summary>
+internal sealed class Lexer
+{
+private readonly string src;
+private int pos;</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Initializes a new instance of the &lt;see cref=&quot;Lexer&quot;/&gt; for the specified source.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;src&quot;&gt;The input text to tokenize.&lt;/param&gt;
+    public Lexer(string src) =&gt; this.src = src;
+
+    /// &lt;summary&gt;
+    /// Reads and returns the next token from the input. Whitespace is skipped.
+    /// Returns a &lt;see cref=&quot;TokenType.End&quot;/&gt; token when the end of input is reached.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The next &lt;see cref=&quot;Token&quot;/&gt; read from the input stream.&lt;/returns&gt;
+    public Token Next()
+    {
+        SkipWhitespace();
+        if (pos &gt;= src.Length) return new Token(TokenType.End, &quot;&quot;, pos);
+
+        int start = pos;
+        char c = src[pos];
+
+        if (char.IsLetter(c) || c == '_')
+            return ReadIdentifier(start);
+
+        if (char.IsDigit(c))
+            return ReadNumber(start);
+
+        if (c == '&quot;')
+            return ReadString(start);
+
+        // handle multi-character token '=&gt;' first
+        if (c == '=' &amp;&amp; pos + 1 &lt; src.Length &amp;&amp; src[pos + 1] == '&gt;')
+        {
+            pos += 2;
+            return new Token(TokenType.Arrow, &quot;=&gt;&quot;, start);
+        }
+
+        // single-character punctuation
+        pos++;
+        return c switch
+        {
+            '.' =&gt; new Token(TokenType.Dot, &quot;.&quot;, start),
+            ',' =&gt; new Token(TokenType.Comma, &quot;,&quot;, start),
+            '(' =&gt; new Token(TokenType.LParen, &quot;(&quot;, start),
+            ')' =&gt; new Token(TokenType.RParen, &quot;)&quot;, start),
+            _ =&gt; new Token(TokenType.End, &quot;&quot;, start)
+        };
+    }
+
+    /// &lt;summary&gt;
+    /// Reads an identifier token beginning at &lt;paramref name=&quot;start&quot;/&gt;.
+    /// Identifiers may contain letters, digits and underscore.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;start&quot;&gt;Start index in the source where the identifier begins.&lt;/param&gt;
+    /// &lt;returns&gt;A token of type &lt;see cref=&quot;TokenType.Identifier&quot;/&gt;.&lt;/returns&gt;
+    private Token ReadIdentifier(int start)
+    {
+        while (pos &lt; src.Length &amp;&amp; (char.IsLetterOrDigit(src[pos]) || src[pos] == '_'))
+            pos++;
+        string text = src[start..pos];
+        return new Token(TokenType.Identifier, text, start);
+    }
+
+    /// &lt;summary&gt;
+    /// Reads a numeric token (digits and optional decimal point).
+    /// The lexer performs only lexical recognition; numeric validation occurs during parsing.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;start&quot;&gt;Start index in the source where the number begins.&lt;/param&gt;
+    /// &lt;returns&gt;A token of type &lt;see cref=&quot;TokenType.Number&quot;/&gt;.&lt;/returns&gt;
+    private Token ReadNumber(int start)
+    {
+        while (pos &lt; src.Length &amp;&amp; (char.IsDigit(src[pos]) || src[pos] == '.'))
+            pos++;
+        string text = src[start..pos];
+        return new Token(TokenType.Number, text, start);
+    }
+
+    /// &lt;summary&gt;
+    /// Reads a double-quoted string literal and returns its unquoted content as the token text.
+    /// Supports common escape sequences: \\, \&quot; , \n, \r, \t. Reports unterminated strings by returning a token with IsComplete=false.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;start&quot;&gt;Start index pointing at the opening quote.&lt;/param&gt;
+    /// &lt;returns&gt;A token of type &lt;see cref=&quot;TokenType.String&quot;/&gt; containing the unquoted string content.&lt;/returns&gt;
+    private Token ReadString(int start)
+    {
+        pos++; // skip opening &quot;
+        var sb = new System.Text.StringBuilder();
+        bool terminated = false;
+        while (pos &lt; src.Length)
+        {
+            char ch = src[pos];
+            if (ch == '&quot;')
+            {
+                terminated = true;
+                pos++; // consume closing quote
+                break;
+            }
+
+            if (ch == '\\' &amp;&amp; pos + 1 &lt; src.Length)
+            {
+                // handle escape sequences
+                char next = src[pos + 1];
+                switch (next)
+                {
+                    case '\\': sb.Append('\\'); break;
+                    case '&quot;': sb.Append('&quot;'); break;
+                    case 'n': sb.Append('\n'); break;
+                    case 'r': sb.Append('\r'); break;
+                    case 't': sb.Append('\t'); break;
+                    default:
+                        // unknown escape: preserve the character as-is
+                        sb.Append(next);
+                        break;
+                }
+                pos += 2;
+                continue;
+            }
+
+            sb.Append(ch);
+            pos++;
+        }
+
+        // If not terminated, capture the remainder as text and mark incomplete
+        if (!terminated)
+        {
+            string textRem = src.Substring(start + 1);
+            pos = src.Length;
+            return new Token(TokenType.String, textRem, start, isComplete: false);
+        }
+
+        return new Token(TokenType.String, sb.ToString(), start, isComplete: true);
+    }
+
+    /// &lt;summary&gt;
+    /// Peeks one character ahead of the current position, returning '\0' when at or past the end.
+    /// Used for recognizing multi-character tokens like &quot;=&gt;&quot;.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The next character or '\0' if none.&lt;/returns&gt;
+    private char Peek() =&gt; pos + 1 &lt; src.Length ? src[pos + 1] : '\0';
+
+    /// &lt;summary&gt;
+    /// Advances the internal cursor past any contiguous whitespace characters.
+    /// &lt;/summary&gt;
+    private void SkipWhitespace()
+    {
+        while (pos &lt; src.Length &amp;&amp; char.IsWhiteSpace(src[pos]))
+            pos++;
+    }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/MemberAccessExpression.cs =====
+// <copyright file="MemberAccessExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Represents accessing a member on a target expression (for example: target.Member).
+/// </summary>
+internal sealed class MemberAccessExpression : ExpressionBase
+{
+/// <summary>
+/// Gets the target expression whose member is accessed.
+/// </summary>
+public IExpression Target { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets the member name being accessed.
+    /// &lt;/summary&gt;
+    public string MemberName { get; }
+
+    /// &lt;summary&gt;
+    /// Initializes a new instance of &lt;see cref=&quot;MemberAccessExpression&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;target&quot;&gt;The target expression.&lt;/param&gt;
+    /// &lt;param name=&quot;memberName&quot;&gt;The member name.&lt;/param&gt;
+    public MemberAccessExpression(IExpression target, string memberName)
+        =&gt; (Target, MemberName) = (target, memberName);
+
+    /// &lt;inheritdoc /&gt;
+    public override ExpressionKind Kind =&gt; ExpressionKind.MemberAccess;
+
+    /// &lt;inheritdoc /&gt;
+    public override IReadOnlyList&lt;IExpression&gt; Operands =&gt; new[] { Target };
+
+    /// &lt;inheritdoc /&gt;
+    public override string Canonical =&gt; $&quot;{Target.Canonical}.{MemberName}&quot;;
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/MethodCallExpression.cs =====
+// <copyright file="MethodCallExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Represents a method call expression on a target with arguments.
+/// </summary>
+internal sealed class MethodCallExpression : ExpressionBase
+{
+/// <summary>
+/// Gets the target expression on which the method is invoked.
+/// </summary>
+public IExpression Target { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets the method name to invoke.
+    /// &lt;/summary&gt;
+    public string MethodName { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the call arguments.
+    /// &lt;/summary&gt;
+    public IReadOnlyList&lt;IExpression&gt; Arguments { get; }
+
+    /// &lt;summary&gt;
+    /// Initializes a new instance of &lt;see cref=&quot;MethodCallExpression&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;target&quot;&gt;The target expression.&lt;/param&gt;
+    /// &lt;param name=&quot;methodName&quot;&gt;The method name.&lt;/param&gt;
+    /// &lt;param name=&quot;args&quot;&gt;The arguments to the method.&lt;/param&gt;
+    public MethodCallExpression(
+        IExpression target,
+        string methodName,
+        IEnumerable&lt;IExpression&gt; args)
+    {
+        Target = target;
+        MethodName = methodName;
+        Arguments = args.ToArray();
+    }
+
+    /// &lt;inheritdoc /&gt;
+    public override ExpressionKind Kind =&gt; ExpressionKind.MethodCall;
+
+    /// &lt;inheritdoc /&gt;
+    public override IReadOnlyList&lt;IExpression&gt; Operands
+        =&gt; new[] { Target }.Concat(Arguments).ToArray();
+
+    /// &lt;inheritdoc /&gt;
+    public override string Canonical
+        =&gt; $&quot;{Target.Canonical}.{MethodName}({string.Join(&quot;, &quot;, Arguments.Select(a =&gt; a.Canonical))})&quot;;
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/Parser.cs =====
+// <copyright file="Parser.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using System.Globalization;</p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Recursive-descent parser that converts a token stream into an <see cref="IExpression"></see> AST and collects diagnostics.
+/// </summary>
+internal sealed class Parser
+{
+private readonly List<token> tokens = new();
+private int idx;
+private readonly List<parsediagnostic> diagnostics = new();</parsediagnostic></token></p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets the diagnostics produced while parsing. The collection may be empty when parsing succeeds.
+    /// &lt;/summary&gt;
+    public IReadOnlyList&lt;ParseDiagnostic&gt; Diagnostics =&gt; diagnostics;
+
+    /// &lt;summary&gt;
+    /// Initializes a new instance of the &lt;see cref=&quot;Parser&quot;/&gt; that tokenizes the provided source string.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;src&quot;&gt;The expression source text to parse.&lt;/param&gt;
+    public Parser(string src)
+    {
+        var lexer = new Lexer(src);
+        Token tok;
+        do
+        {
+            tok = lexer.Next();
+            tokens.Add(tok);
+        } while (tok.Type != TokenType.End);
+    }
+
+    /// &lt;summary&gt;
+    /// Parses an expression from the current token stream. When parsing fails, diagnostics are recorded.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The parsed &lt;see cref=&quot;IExpression&quot;/&gt; when successful; otherwise &lt;c&gt;null&lt;/c&gt;.&lt;/returns&gt;
+    public IExpression? ParseExpression()
+    {
+        if (Peek().Type == TokenType.End)
+        {
+            diagnostics.Add(new ParseDiagnostic(0, &quot;Empty expression&quot;));
+            return null;
+        }
+
+        var expr = ParseLambdaOrMemberOrCall();
+
+        if (Peek().Type != TokenType.End)
+        {
+            var tok = Peek();
+            diagnostics.Add(new ParseDiagnostic(tok.Position, $&quot;Unexpected token '{tok.Text}'&quot;));
+        }
+
+        return expr;
+    }
+
+    /// &lt;summary&gt;
+    /// Parses either a lambda expression, a member access chain, or a method call starting at the current token.
+    /// Handles primary expressions (identifiers, numbers, strings) and folds trailing member/access or invocation.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The parsed expression or &lt;c&gt;null&lt;/c&gt; on error.&lt;/returns&gt;
+    private IExpression? ParseLambdaOrMemberOrCall()
+    {
+        if (IsIdentifierList() &amp;&amp; PeekNext().Type == TokenType.Arrow)
+            return ParseLambda();
+
+        IExpression? expr = Peek().Type switch
+        {
+            TokenType.Identifier =&gt; new IdentifierExpression(Consume().Text),
+            TokenType.Number =&gt; TryParseNumber(),
+            TokenType.String =&gt; TryParseString(),
+            _ =&gt; null
+        };
+
+        if (expr is null)
+        {
+            var tok = Peek();
+            diagnostics.Add(new ParseDiagnostic(tok.Position, $&quot;Unexpected token '{tok.Text}'&quot;));
+            return null;
+        }
+
+        while (Peek().Type == TokenType.Dot)
+        {
+            Consume(); // '.'
+            if (Peek().Type != TokenType.Identifier)
+            {
+                var err = Peek();
+                diagnostics.Add(new ParseDiagnostic(err.Position, &quot;Identifier expected after '.'&quot;));
+                break;
+            }
+
+            var name = Consume().Text;
+            expr = Peek().Type == TokenType.LParen
+                ? ParseMethodCall(expr, name)
+                : new MemberAccessExpression(expr, name);
+        }
+
+        return expr;
+    }
+
+    /// &lt;summary&gt;
+    /// Determines whether the token sequence beginning at the current index represents
+    /// a comma-separated identifier list suitable for lambda parameters (e.g. &quot;x, y =&gt;&quot;).
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;&lt;c&gt;true&lt;/c&gt; when a comma-separated identifier list is followed by an arrow token.&lt;/returns&gt;
+    private bool IsIdentifierList()
+    {
+        int i = idx;
+        if (tokens[i].Type != TokenType.Identifier) return false;
+        i++;
+        while (i &lt; tokens.Count &amp;&amp; tokens[i].Type == TokenType.Comma)
+            i += 2;
+        return i &lt; tokens.Count &amp;&amp; tokens[i].Type == TokenType.Arrow;
+    }
+
+    /// &lt;summary&gt;
+    /// Parses a lambda expression in the form &quot;param, ... =&gt; body&quot;.
+    /// Parameters are consumed from the token stream and the body is parsed.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;A &lt;see cref=&quot;LambdaExpression&quot;/&gt; representing the parsed lambda.&lt;/returns&gt;
+    private IExpression? ParseLambda()
+    {
+        var parameters = new List&lt;string&gt;();
+        do
+        {
+            parameters.Add(Consume().Text);
+        } while (Peek().Type == TokenType.Comma &amp;&amp; Consume().Type == TokenType.Comma);
+
+        Consume(); // Arrow
+        var body = ParseLambdaOrMemberOrCall() ?? new ConstantExpression(null);
+        return new LambdaExpression(parameters, body);
+    }
+
+    /// &lt;summary&gt;
+    /// Parses a method call expression given a previously parsed target and method name.
+    /// Expects to be positioned at the opening '(' when called.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;target&quot;&gt;The target expression on which the method is invoked.&lt;/param&gt;
+    /// &lt;param name=&quot;name&quot;&gt;The method name.&lt;/param&gt;
+    /// &lt;returns&gt;A &lt;see cref=&quot;MethodCallExpression&quot;/&gt; representing the invocation.&lt;/returns&gt;
+    private MethodCallExpression ParseMethodCall(IExpression target, string name)
+    {
+        Consume(); // LParen
+        var args = new List&lt;IExpression&gt;();
+        if (Peek().Type != TokenType.RParen)
+        {
+            do
+            {
+                var arg = ParseLambdaOrMemberOrCall();
+                if (arg != null) args.Add(arg);
+            } while (Peek().Type == TokenType.Comma &amp;&amp; Consume().Type == TokenType.Comma);
+        }
+        Consume(); // RParen
+        return new MethodCallExpression(target, name, args);
+    }
+
+    /// &lt;summary&gt;
+    /// Attempts to parse the current numeric token into a numeric constant expression using invariant culture.
+    /// When parsing fails a diagnostic is recorded and a &lt;see cref=&quot;ConstantExpression&quot;/&gt; with a null value is returned.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;An &lt;see cref=&quot;IExpression&quot;/&gt; representing the numeric constant (or null constant on error).&lt;/returns&gt;
+    private IExpression TryParseNumber()
+    {
+        var tok = Consume();
+        if (double.TryParse(tok.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
+            return new ConstantExpression(d);
+
+        diagnostics.Add(new ParseDiagnostic(tok.Position, $&quot;Invalid number '{tok.Text}'&quot;));
+        return new ConstantExpression(null);
+    }
+
+    /// &lt;summary&gt;
+    /// Consumes the current string token and returns a &lt;see cref=&quot;ConstantExpression&quot;/&gt; containing its text.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;An &lt;see cref=&quot;IExpression&quot;/&gt; representing the string constant.&lt;/returns&gt;
+    private IExpression TryParseString()
+    {
+        var tok = Consume();
+        if (!tok.IsComplete)
+        {
+            diagnostics.Add(new ParseDiagnostic(tok.Position, &quot;Unterminated string literal&quot;));
+            return new ConstantExpression(null);
+        }
+
+        return new ConstantExpression(tok.Text);
+    }
+
+    /// &lt;summary&gt;
+    /// Returns the token at the current parser index without consuming it.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The current &lt;see cref=&quot;Token&quot;/&gt;.&lt;/returns&gt;
+    private Token Peek() =&gt; tokens[idx];
+
+    /// &lt;summary&gt;
+    /// Returns the token immediately after the current parser index without consuming it.
+    /// If the lookahead is out of range the current token is returned.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The next &lt;see cref=&quot;Token&quot;/&gt; or the current token if lookahead is not available.&lt;/returns&gt;
+    private Token PeekNext() =&gt; idx + 1 &lt; tokens.Count ? tokens[idx + 1] : Peek();
+
+    /// &lt;summary&gt;
+    /// Consumes and returns the token at the current index, advancing the parser position by one.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The consumed &lt;see cref=&quot;Token&quot;/&gt;.&lt;/returns&gt;
+    private Token Consume() =&gt; tokens[idx++];
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/StubEvaluator.cs =====
+// <copyright file="StubEvaluator.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Minimal evaluator used internally by tests/stubs. Supports constant expressions and
+/// simple identifier/member lookup from IDictionary&lt;string, object?&gt; contexts.
+/// </summary>
+internal static class StubEvaluator
+{
+/// <summary>
+/// Evaluates the specified expression and returns a result.
+/// </summary>
+/// <param name="expr">The expression to evaluate.
+/// <param name="context">An optional evaluation context. If a IDictionary&lt;string, object?&gt; is provided identifiers and member access will be resolved from it.
+/// <returns>The evaluated value for supported node types; otherwise <c>null</c>.</returns>
+public static object? Evaluate(IExpression expr, object? context)
+{
+return expr switch
+{
+ConstantExpression c =&gt; c.Value,
+IdentifierExpression id =&gt; ResolveIdentifier(id.Name, context),
+MemberAccessExpression m =&gt; ResolveMember(m.Target, m.MemberName, context),
+MethodCallExpression mc =&gt; EvaluateMethodCall(mc, context),
+_ =&gt; null
+};
+}</p>
+<pre><code>    private static object? ResolveIdentifier(string name, object? context)
+    {
+        if (context is System.Collections.IDictionary dict)
+        {
+            if (dict.Contains(name)) return dict[name];
+        }
+        else if (context is System.Collections.Generic.IDictionary&lt;string, object?&gt; gen)
+        {
+            if (gen.TryGetValue(name, out var v)) return v;
+        }
+        return null;
+    }
+
+    private static object? ResolveMember(IExpression targetExpr, string memberName, object? context)
+    {
+        var targetVal = Evaluate(targetExpr, context);
+        if (targetVal is System.Collections.IDictionary dict)
+        {
+            if (dict.Contains(memberName)) return dict[memberName];
+        }
+        else if (targetVal is System.Collections.Generic.IDictionary&lt;string, object?&gt; gen)
+        {
+            if (gen.TryGetValue(memberName, out var v)) return v;
+        }
+
+        // As a fallback, reflect public properties
+        if (targetVal is not null)
+        {
+            var t = targetVal.GetType();
+            var prop = t.GetProperty(memberName);
+            if (prop != null) return prop.GetValue(targetVal);
+        }
+
+        return null;
+    }
+
+    private static object? EvaluateMethodCall(MethodCallExpression mc, object? context)
+    {
+        var target = Evaluate(mc.Target, context);
+        var rawArgs = mc.Arguments.Select(a =&gt; Evaluate(a, context)).ToArray();
+
+        // If target is a delegate, invoke with coerced args
+        if (target is Delegate d)
+        {
+            var adapted = AdaptArgumentsForDelegate(d, rawArgs);
+            return adapted is null ? null : InvokeDelegate(d, adapted);
+        }
+
+        // If target is a dictionary containing the method name as a delegate, invoke it
+        if (target is System.Collections.Generic.IDictionary&lt;string, object?&gt; targetGen &amp;&amp; targetGen.TryGetValue(mc.MethodName, out var maybeDel) &amp;&amp; maybeDel is Delegate del2)
+        {
+            var adapted = AdaptArgumentsForDelegate(del2, rawArgs);
+            return adapted is null ? null : InvokeDelegate(del2, adapted);
+        }
+
+        if (target is System.Collections.IDictionary targetDict &amp;&amp; targetDict.Contains(mc.MethodName) &amp;&amp; targetDict[mc.MethodName] is Delegate del3)
+        {
+            var adapted = AdaptArgumentsForDelegate(del3, rawArgs);
+            return adapted is null ? null : InvokeDelegate(del3, adapted);
+        }
+
+        // Try lookup in context by method name when target didn't provide it
+        if (context is System.Collections.Generic.IDictionary&lt;string, object?&gt; dict &amp;&amp; dict.TryGetValue(mc.MethodName, out var maybeDel2) &amp;&amp; maybeDel2 is Delegate dd)
+        {
+            var adapted = AdaptArgumentsForDelegate(dd, rawArgs);
+            return adapted is null ? null : InvokeDelegate(dd, adapted);
+        }
+
+        if (context is System.Collections.IDictionary ctxDict &amp;&amp; ctxDict.Contains(mc.MethodName) &amp;&amp; ctxDict[mc.MethodName] is Delegate dd2)
+        {
+            var adapted = AdaptArgumentsForDelegate(dd2, rawArgs);
+            return adapted is null ? null : InvokeDelegate(dd2, adapted);
+        }
+
+        // As a final fallback, try reflection on the target for a delegate-valued property
+        if (target is not null)
+        {
+            var t = target.GetType();
+            var prop = t.GetProperty(mc.MethodName);
+            if (prop != null)
+            {
+                var val = prop.GetValue(target);
+                if (val is Delegate ddd)
+                {
+                    var adapted = AdaptArgumentsForDelegate(ddd, rawArgs);
+                    return adapted is null ? null : InvokeDelegate(ddd, adapted);
+                }
+            }
+        }
+
+        // Deep search: find delegate by key in nested dictionaries or properties
+        var found = FindDelegateInObject(target, mc.MethodName) ?? FindDelegateInObject(context, mc.MethodName);
+        if (found is Delegate fdel)
+        {
+            var adapted = AdaptArgumentsForDelegate(fdel, rawArgs);
+            return adapted is null ? null : InvokeDelegate(fdel, adapted);
+        }
+
+        return null;
+    }
+
+    private static object? InvokeDelegate(Delegate del, object[] args)
+    {
+        // Allow exceptions to surface so calling tests can detect invocation issues
+        return del.DynamicInvoke(args);
+    }
+
+    private static object[]? AdaptArgumentsForDelegate(Delegate del, object?[] rawArgs)
+    {
+        var parameters = del.Method.GetParameters();
+        if (parameters.Length != rawArgs.Length) return null;
+        var adapted = new object?[rawArgs.Length];
+        for (int i = 0; i &lt; rawArgs.Length; i++)
+        {
+            var targetType = parameters[i].ParameterType;
+            var val = rawArgs[i];
+            if (val == null)
+            {
+                adapted[i] = null;
+                continue;
+            }
+
+            if (targetType.IsInstanceOfType(val))
+            {
+                adapted[i] = val;
+                continue;
+            }
+
+            try
+            {
+                adapted[i] = Convert.ChangeType(val, targetType);
+            }
+            catch
+            {
+                // Failed to convert
+                return null;
+            }
+        }
+
+        return adapted.Cast&lt;object&gt;().ToArray();
+    }
+
+    private static object? FindDelegateInObject(object? obj, string methodName)
+    {
+        if (obj is null) return null;
+        if (obj is Delegate d) return d;
+
+        if (obj is System.Collections.Generic.IDictionary&lt;string, object?&gt; gen)
+        {
+            if (gen.TryGetValue(methodName, out var v) &amp;&amp; v is Delegate dv) return dv;
+            foreach (var val in gen.Values)
+            {
+                var found = FindDelegateInObject(val, methodName);
+                if (found is Delegate) return found;
+            }
+        }
+
+        if (obj is System.Collections.IDictionary nonGen)
+        {
+            if (nonGen.Contains(methodName) &amp;&amp; nonGen[methodName] is Delegate dv2) return dv2;
+            foreach (System.Collections.DictionaryEntry entry in nonGen)
+            {
+                var found = FindDelegateInObject(entry.Value, methodName);
+                if (found is Delegate) return found;
+            }
+        }
+
+        // reflect properties
+        var t = obj.GetType();
+        foreach (var prop in t.GetProperties())
+        {
+            var val = prop.GetValue(obj);
+            var found = FindDelegateInObject(val, methodName);
+            if (found is Delegate) return found;
+        }
+
+        return null;
+    }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/StubTypedExpression.cs =====
+// <copyright file="StubTypedExpression.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>using Zentient.Abstractions.Expressions;</p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// A lightweight wrapper implementing <see cref="ITypedExpression{T}"></see> around an existing <see cref="IExpression"></see>.
+/// The evaluation uses the internal <see cref="StubEvaluator"></see> and not a full evaluator.
+/// </summary>
+/// <typeparam name="T">The target CLR type for evaluation.</typeparam>
+internal sealed class StubTypedExpression<t> : ITypedExpression<t>
+{
+private readonly IExpression _inner;</t></t></p>
+<pre><code>    /// &lt;summary&gt;
+    /// Initializes a new instance that wraps &lt;paramref name=&quot;inner&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;inner&quot;&gt;The inner expression to evaluate.&lt;/param&gt;
+    public StubTypedExpression(IExpression inner) =&gt; _inner = inner;
+
+    /// &lt;inheritdoc /&gt;
+    public ExpressionKind Kind =&gt; _inner.Kind;
+
+    /// &lt;inheritdoc /&gt;
+    public string Canonical =&gt; _inner.Canonical;
+
+    /// &lt;inheritdoc /&gt;
+    public IReadOnlyList&lt;IExpression&gt; Operands =&gt; _inner.Operands;
+
+    /// &lt;summary&gt;
+    /// Evaluates the wrapped expression using the internal stub evaluator and returns a value of type &lt;typeparamref name=&quot;T&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;context&quot;&gt;An optional context object passed to the evaluator.&lt;/param&gt;
+    /// &lt;returns&gt;The evaluated value converted to &lt;typeparamref name=&quot;T&quot;/&gt; when possible; otherwise the default of &lt;typeparamref name=&quot;T&quot;/&gt;.&lt;/returns&gt;
+    public T Evaluate(object? context = null)
+    {
+        var result = StubEvaluator.Evaluate(_inner, context);
+        ExpressionRegistry.RaiseEvaluated(_inner, result);
+        return result is T t ? t : default!;
+    }
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/Token.cs =====
+// <copyright file="Token.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// A single lexical token with its type, textual content and start position.
+/// </summary>
+internal readonly struct Token
+{
+/// <summary>Gets the token kind.</summary>
+public TokenType Type { get; }</p>
+<pre><code>    /// &lt;summary&gt;
+    /// Gets the exact text for the token as it appeared in the source.
+    /// For string tokens this value is the unquoted content.
+    /// &lt;/summary&gt;
+    public string Text { get; }
+
+    /// &lt;summary&gt;
+    /// Gets the zero-based character index in the source where the token begins.
+    /// &lt;/summary&gt;
+    public int Position { get; }
+
+    /// &lt;summary&gt;
+    /// For string tokens, indicates whether the closing quote was found.
+    /// For other tokens this is always true.
+    /// &lt;/summary&gt;
+    public bool IsComplete { get; }
+
+    /// &lt;summary&gt;
+    /// Initializes a new instance of &lt;see cref=&quot;Token&quot;/&gt;.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;type&quot;&gt;The token kind.&lt;/param&gt;
+    /// &lt;param name=&quot;text&quot;&gt;The token text.&lt;/param&gt;
+    /// &lt;param name=&quot;position&quot;&gt;Zero-based start position within the source.&lt;/param&gt;
+    /// &lt;param name=&quot;isComplete&quot;&gt;For string tokens, whether the closing quote was found. Defaults to true.&lt;/param&gt;
+    public Token(TokenType type, string text, int position, bool isComplete = true)
+        =&gt; (Type, Text, Position, IsComplete) = (type, text, position, isComplete);
+}
+</code></pre>
+<p>}</p>
+<p>===== src/Zentient.Expressions/TokenType.cs =====
+// <copyright file="TokenType.cs" authors="Zentient Framework Team">
+// Copyright Â© 2025 Zentient Framework Team. All rights reserved.
+// </copyright></p>
+<p>namespace Zentient.Expressions
+{
+/// <summary>
+/// Represents the kinds of lexical tokens produced by the expression lexer.
+/// </summary>
+internal enum TokenType
+{
+Identifier,
+Number,
+String,
+Dot,
+Comma,
+LParen,
+RParen,
+Arrow,
+End
+}
+}</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/ulfbou/Zentient.Testing/blob/main/docs/internal/Zentient.Expressions.Api.0.1.0-alfa.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
