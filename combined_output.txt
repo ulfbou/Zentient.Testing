@@ -1,0 +1,1256 @@
+===== src/Zentient.Abstractions.Testing/IMockBuilder{T}.cs =====
+﻿// <copyright file="IMockBuilder{T}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Zentient.Abstractions.Testing
+{
+    /// <summary>
+    /// Fluent API for building mocks.
+    /// </summary>
+    /// <typeparam name="T">The mocked interface type.</typeparam>
+    public interface IMockBuilder<T>
+    {
+        /// <summary>
+        /// Specify the method or property call to stub using an expression returning an object.
+        /// </summary>
+        /// <param name="expression">Expression identifying the call.</param>
+        /// <returns>The mock builder for chaining.</returns>
+        IMockBuilder<T> Given(Expression<Func<T, object>> expression);
+
+        /// <summary>
+        /// Specify the method or property call to stub using a void-returning expression.
+        /// </summary>
+        /// <param name="expression">Expression identifying the call.</param>
+        /// <returns>The mock builder for chaining.</returns>
+        IMockBuilder<T> Given(Expression<Action<T>> expression);
+
+        /// <summary>
+        /// Configure the previously specified call to return the provided result when invoked.
+        /// </summary>
+        /// <param name="result">Result object to return.</param>
+        /// <returns>The mock builder for chaining.</returns>
+        IMockBuilder<T> ThenReturns(object? result);
+
+        /// <summary>
+        /// Configure the previously specified call to throw the provided exception when invoked.
+        /// </summary>
+        /// <param name="ex">Exception to be thrown.</param>
+        /// <returns>The mock builder for chaining.</returns>
+        IMockBuilder<T> ThenThrows(Exception ex);
+
+        /// <summary>
+        /// Finalize the mock and return the proxy instance. Also returns a verifier instance.
+        /// </summary>
+        /// <param name="verifier">Out parameter receiving the verifier for assertions against the mock.</param>
+        /// <returns>The proxied mock instance implementing <typeparamref name="T"/>.</returns>
+        T Build(out IMockVerifier<T> verifier);
+    }
+}
+
+
+===== src/Zentient.Abstractions.Testing/IMockVerifier{T}.cs =====
+﻿// <copyright file="IMockVerifier{T}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
+{
+    /// <summary>
+    /// Verifier API for asserting calls were made on mocks.
+    /// </summary>
+    /// <typeparam name="T">The mocked interface type.</typeparam>
+    public interface IMockVerifier<T>
+    {
+        /// <summary>
+        /// Assert that a method with the specified name was called at least once.
+        /// </summary>
+        /// <param name="methodName">Name of the method expected to have been called.</param>
+        void ShouldHaveBeenCalled(string methodName);
+
+        /// <summary>
+        /// Assert that a method with the specified name was called the expected number of times.
+        /// </summary>
+        /// <param name="methodName">Name of the method.</param>
+        /// <param name="expected">Expected call count.</param>
+        void ShouldHaveBeenCalledTimes(string methodName, int expected);
+    }
+}
+
+
+===== src/Zentient.Abstractions.Testing/IResultAssertions{TResult}.cs =====
+﻿// <copyright file="IResultAssertions{TResult}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System.Linq.Expressions;
+
+namespace Zentient.Abstractions.Testing
+{
+    /// <summary>
+    /// Synchronous assertion helpers used by scenarios.
+    /// </summary>
+    /// <typeparam name="TResult">Result type under assertion.</typeparam>
+    public interface IResultAssertions<TResult>
+    {
+        /// <summary>
+        /// Assert that the result is not null.
+        /// </summary>
+        void NotBeNull();
+
+        /// <summary>
+        /// Assert that the result has the expected value.
+        /// </summary>
+        /// <param name="expected">Expected value.</param>
+        void HaveValue(TResult expected);
+
+        /// <summary>
+        /// Assert on a selected property of the result.
+        /// </summary>
+        /// <typeparam name="TProperty">Property type.</typeparam>
+        /// <param name="selector">Selector to pick the property from the result.</param>
+        /// <param name="expected">Expected property value.</param>
+        void WithProperty<TProperty>(Expression<Func<TResult, TProperty>> selector, TProperty expected);
+
+        /// <summary>
+        /// Allows chaining of assertions.
+        /// </summary>
+        IResultAssertions<TResult> AndAlso { get; }
+    }
+}
+
+
+===== src/Zentient.Abstractions.Testing/ITestHarness.cs =====
+﻿// <copyright file="ITestHarness.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
+{
+    /// <summary>
+    /// Represents a lightweight per-test service resolver used by the harness.
+    /// </summary>
+    public interface ITestHarness
+    {
+        /// <summary>
+        /// Resolve a registered service or construct one using registered dependencies.
+        /// </summary>
+        /// <typeparam name="T">Service type to resolve.</typeparam>
+        /// <returns>Instance of the requested service.</returns>
+        T Resolve<T>();
+    }
+}
+
+
+===== src/Zentient.Abstractions.Testing/ITestHarnessBuilder.cs =====
+﻿// <copyright file="ITestHarnessBuilder.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
+{
+    /// <summary>
+    /// Builder used to configure dependencies and mocks for a test harness.
+    /// </summary>
+    public interface ITestHarnessBuilder
+    {
+        /// <summary>
+        /// Register a concrete instance for the given service type for the lifetime of the harness.
+        /// </summary>
+        /// <typeparam name="T">Service type.</typeparam>
+        /// <param name="instance">Instance to register.</param>
+        /// <returns>The builder for chaining.</returns>
+        ITestHarnessBuilder WithDependency<T>(T instance);
+
+        /// <summary>
+        /// Configure a mock using the internal mock builder DSL and register the built mock instance as the service.
+        /// </summary>
+        /// <typeparam name="T">Service type to mock.</typeparam>
+        /// <param name="configure">Action configuring the mock builder.</param>
+        /// <returns>The builder for chaining.</returns>
+        ITestHarnessBuilder WithMock<T>(Action<IMockBuilder<T>> configure);
+
+        /// <summary>
+        /// Configure a mock and expose the created verifier.
+        /// </summary>
+        /// <typeparam name="T">Service type to mock.</typeparam>
+        /// <param name="configure">Action configuring the mock builder.</param>
+        /// <param name="verifier">Out parameter that receives the verifier for the created mock.</param>
+        /// <returns>The builder for chaining.</returns>
+        ITestHarnessBuilder WithMock<T>(Action<IMockBuilder<T>> configure, out IMockVerifier<T> verifier);
+
+        /// <summary>
+        /// Replace an existing registration for the provided service type with the supplied instance.
+        /// </summary>
+        /// <typeparam name="T">Service type.</typeparam>
+        /// <param name="instance">New instance to register.</param>
+        /// <returns>The builder for chaining.</returns>
+        ITestHarnessBuilder Replace<T>(T instance);
+
+        /// <summary>
+        /// Build the harness and return an <see cref="ITestHarness"/> that can resolve services.
+        /// </summary>
+        /// <returns>The built harness.</returns>
+        ITestHarness Build();
+    }
+}
+
+
+===== src/Zentient.Abstractions.Testing/ITestScenario{TInput, TResult}.cs =====
+﻿// <copyright file="ITestScenario{TInput, TResult}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+namespace Zentient.Abstractions.Testing
+{
+    /// <summary>
+    /// Represents a test scenario for arranging, acting and asserting results.
+    /// </summary>
+    /// <typeparam name="TInput">Type of the input to the scenario.</typeparam>
+    /// <typeparam name="TResult">Type of the result produced by the scenario.</typeparam>
+    public interface ITestScenario<TInput, TResult>
+    {
+        /// <summary>
+        /// Add an arrange action that configures the harness builder.
+        /// </summary>
+        /// <param name="configure">Configure action for the harness builder.</param>
+        /// <returns>The scenario for chaining.</returns>
+        ITestScenario<TInput, TResult> Arrange(Action<ITestHarnessBuilder> configure);
+
+        /// <summary>
+        /// Executes the scenario's act step asynchronously using the supplied input.
+        /// </summary>
+        /// <param name="input">The input for the scenario.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>A task producing the result.</returns>
+        Task<TResult> ActAsync(TInput input, CancellationToken ct = default);
+
+        /// <summary>
+        /// Run synchronous assertions against the produced result.
+        /// </summary>
+        /// <param name="assertions">Assertions to execute against the result.</param>
+        void Assert(Action<IResultAssertions<TResult>> assertions);
+    }
+}
+
+
+===== src/Zentient.Testing/Internal/Behavior.cs =====
+﻿// <copyright file="Behavior.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Reflection;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Represents a configured behavior for a mocked method, including matching predicate and outcome.
+    /// </summary>
+    /// <param name="Method">Method information this behavior applies to.</param>
+    /// <param name="Predicate">Predicate that evaluates call argument arrays.</param>
+    /// <param name="Action">Optional action to execute for matched calls.</param>
+    /// <param name="ReturnValue">Optional return value for matched calls.</param>
+    /// <param name="ExceptionToThrow">Optional exception to throw when the behavior matches.</param>
+    public sealed record Behavior(
+        MethodInfo Method,
+        Func<object?[], bool> Predicate,
+        Func<object?[], object?>? Action,
+        object? ReturnValue,
+        Exception? ExceptionToThrow);
+}
+
+
+===== src/Zentient.Testing/Internal/CallInfo.cs =====
+﻿// <copyright file="CallInfo.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Reflection;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Contains information about a single invocation performed against a mock proxy.
+    /// </summary>
+    /// <param name="method">The invoked method.</param>
+    /// <param name="args">The arguments passed to the method.</param>
+    public sealed class CallInfo(MethodInfo method, object?[] args)
+    {
+        /// <summary>
+        /// Gets the method that was invoked.
+        /// </summary>
+        public MethodInfo Method { get; } = method ?? throw new ArgumentNullException(nameof(method));
+
+        /// <summary>
+        /// Gets the arguments passed to the invocation.
+        /// </summary>
+        public object?[] Arguments { get; } = args ?? throw new ArgumentNullException(nameof(args));
+
+        /// <summary>
+        /// Gets the UTC timestamp when the invocation occurred.
+        /// </summary>
+        public DateTime Timestamp { get; } = DateTime.UtcNow;
+    }
+}
+
+
+===== src/Zentient.Testing/Internal/It.cs =====
+﻿// <copyright file="It.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System.Diagnostics.CodeAnalysis;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Helper used in expression trees to indicate a wildcard argument.
+    /// </summary>
+    public static class It
+    {
+        /// <summary>
+        /// Matches any value of the given type when used in a Given expression.
+        /// </summary>
+        /// <typeparam name="T">The type to match.</typeparam>
+        /// <returns>Default value for the type (placeholder only).</returns>
+        [SuppressMessage("Style", "IDE0022:Use block body for method", Justification = "Expression-bodied is intentional here")]
+        public static T IsAny<T>() => default!;
+    }
+}
+
+
+===== src/Zentient.Testing/Internal/MockBuilder{T}.cs =====
+﻿// <copyright file="MockBuilder{T}.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.ObjectModel;
+using System.Linq.Expressions;
+using System.Reflection;
+
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Default mock builder implementation used to configure behaviors for a mocked interface.
+    /// </summary>
+    /// <typeparam name="T">The mocked interface type.</typeparam>
+    internal sealed class MockBuilder<T> : IMockBuilder<T>
+    {
+        private readonly MockEngine _engine = new();
+        private MethodInfo? _currentMethod;
+        private Func<object?[], bool>? _currentPredicate;
+
+        /// <summary>
+        /// Extracts a <see cref="MethodCallExpression"/> from an expression if present.
+        /// </summary>
+        /// <param name="expr">Expression to inspect.</param>
+        /// <returns>The inner <see cref="MethodCallExpression"/> or <c>null</c> when not found.</returns>
+        private static MethodCallExpression? GetMethodCall(Expression expr)
+        {
+            if (expr is MethodCallExpression mce) return mce;
+            if (expr is UnaryExpression ue && ue.Operand is MethodCallExpression inner) return inner;
+            return null;
+        }
+
+        /// <inheritdoc />
+        public IMockBuilder<T> Given(Expression<Func<T, object>> expression)
+        {
+            ArgumentNullException.ThrowIfNull(expression);
+            var mce = GetMethodCall(expression.Body) ?? throw new InvalidOperationException("Given must be a method call expression");
+
+            _currentMethod = mce.Method;
+
+            ReadOnlyCollection<Expression> args = mce.Arguments;
+            _currentPredicate = callArgs =>
+            {
+                if (callArgs.Length != args.Count)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < args.Count; i++)
+                {
+                    if (args[i] is MethodCallExpression argMce && argMce.Method.DeclaringType == typeof(It))
+                    {
+                        continue;
+                    }
+
+                    object? expected = Expression.Lambda(args[i]).Compile().DynamicInvoke();
+                    if (!Equals(expected, callArgs[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+
+            return this;
+        }
+
+        /// <inheritdoc/>
+        public IMockBuilder<T> Given(Expression<Action<T>> expression)
+        {
+            ArgumentNullException.ThrowIfNull(expression);
+            var mce = GetMethodCall(expression.Body) ?? throw new InvalidOperationException("Given must be a method call expression");
+
+            _currentMethod = mce.Method;
+            ReadOnlyCollection<Expression> args = mce.Arguments;
+            _currentPredicate = callArgs =>
+            {
+                if (callArgs.Length != args.Count)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < args.Count; i++)
+                {
+                    if (args[i] is MethodCallExpression argMce && argMce.Method.DeclaringType == typeof(It))
+                    {
+                        continue;
+                    }
+
+                    object? expected = Expression.Lambda(args[i]).Compile().DynamicInvoke();
+                    if (!Equals(expected, callArgs[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IMockBuilder<T> ThenReturns(object? result)
+        {
+            if (_currentMethod is null)
+            {
+                throw new InvalidOperationException("ThenReturns called before Given");
+            }
+
+            _engine.AddBehavior(new Behavior(
+                _currentMethod,
+                _currentPredicate ?? (_ => true),
+                null,
+                result,
+                null));
+
+            _currentMethod = null;
+            _currentPredicate = null;
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IMockBuilder<T> ThenThrows(Exception ex)
+        {
+            if (_currentMethod is null)
+            {
+                throw new InvalidOperationException("ThenThrows called before Given");
+            }
+
+            _engine.AddBehavior(new Behavior(
+                _currentMethod,
+                _currentPredicate ?? (_ => true),
+                null,
+                null,
+                ex));
+
+            _currentMethod = null;
+            _currentPredicate = null;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Builds the mock instance and returns a verifier that can be used to assert calls.
+        /// </summary>
+        /// <param name="verifier">Outputs a verifier instance for the built mock.</param>
+        /// <returns>A proxy instance implementing <typeparamref name="T"/> that delegates calls to the configured mock engine.</returns>
+        public T Build(out IMockVerifier<T> verifier)
+        {
+            T proxy = ProxyGenerator.CreateProxyInstance<T>(_engine);
+            verifier = new MockVerifier<T>(_engine);
+            return proxy;
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/Internal/MockEngine.cs =====
+﻿// <copyright file="MockEngine.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Engine responsible for storing configured behaviors and replaying them for proxy calls.
+    /// </summary>
+    public sealed class MockEngine
+    {
+        private readonly Dictionary<MethodInfo, List<Behavior>> _behaviors = new();
+        private readonly List<CallInfo> _calls = new();
+
+        /// <summary>
+        /// Adds a behavior to the engine for a given method.
+        /// </summary>
+        /// <param name="behavior">The behavior to add.</param>
+        public void AddBehavior(Behavior behavior)
+        {
+            if (!_behaviors.TryGetValue(behavior.Method, out List<Behavior>? list))
+            {
+                list = new List<Behavior>();
+                _behaviors[behavior.Method] = list;
+            }
+
+            list.Add(behavior);
+        }
+
+        /// <summary>
+        /// Invokes the engine for a method call, records the call, and returns a configured result.
+        /// </summary>
+        /// <param name="method">The invoked <see cref="MethodInfo"/>.</param>
+        /// <param name="args">Call arguments.</param>
+        /// <returns>The configured return value when a behavior matches; otherwise a default value for the method's return type.</returns>
+        public object? Invoke(MethodInfo method, object?[] args)
+        {
+            _calls.Add(new CallInfo(method, args));
+
+            if (_behaviors.TryGetValue(method, out List<Behavior>? list))
+            {
+                foreach (Behavior behavior in list)
+                {
+                    if (behavior.Predicate(args))
+                    {
+                        if (behavior.ExceptionToThrow is not null)
+                        {
+                            throw behavior.ExceptionToThrow;
+                        }
+
+                        if (behavior.Action is not null)
+                        {
+                            return behavior.Action(args);
+                        }
+
+                        return behavior.ReturnValue;
+                    }
+                }
+            }
+
+            return method.ReturnType.IsValueType ? Activator.CreateInstance(method.ReturnType) : null;
+        }
+
+        /// <summary>
+        /// Gets the recorded calls for verification purposes.
+        /// </summary>
+        public IReadOnlyList<CallInfo> Calls => _calls;
+    }
+}
+
+
+===== src/Zentient.Testing/Internal/MockVerifier.cs =====
+﻿// <copyright file="MockVerifier.cs" authors="Zentient Framework Team">
+// Copyright © 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Linq;
+
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Verifier implementation that inspects recorded mock calls and asserts expectations.
+    /// </summary>
+    /// <typeparam name="T">The mocked interface type.</typeparam>
+    internal sealed class MockVerifier<T> : IMockVerifier<T>
+    {
+        private readonly MockEngine _engine;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="MockVerifier{T}"/>.
+        /// </summary>
+        /// <param name="engine">The mock engine used to record calls.</param>
+        public MockVerifier(MockEngine engine)
+        {
+            _engine = engine ?? throw new ArgumentNullException(nameof(engine));
+        }
+
+        /// <inheritdoc />
+        public void ShouldHaveBeenCalled(string methodName)
+        {
+            if (string.IsNullOrWhiteSpace(methodName))
+                throw new ArgumentException("Method name must be provided", nameof(methodName));
+
+            if (!_engine.Calls.Any(c => c.Method.Name == methodName))
+            {
+                throw new InvalidOperationException($"Expected method {methodName} to be called");
+            }
+        }
+
+        /// <inheritdoc />
+        public void ShouldHaveBeenCalledTimes(string methodName, int expected)
+        {
+            int count = _engine.Calls.Count(c => c.Method.Name == methodName);
+            if (count != expected)
+            {
+                throw new InvalidOperationException($"Expected {methodName} to be called {expected} times but was {count}");
+            }
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/Internal/ProxyGenerator.cs =====
+// <copyright file="ProxyGenerator.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Generates lightweight proxy implementations for interface types at runtime.
+    /// Proxies forward calls to a <see cref="MockEngine"/> instance which records invocations
+    /// and returns configured behavior results.
+    /// </summary>
+    internal static class ProxyGenerator
+    {
+        private static readonly AssemblyBuilder s_assemblyBuilder;
+        private static readonly ModuleBuilder s_moduleBuilder;
+        private static readonly ConcurrentDictionary<Type, Type> s_cache = new();
+
+        static ProxyGenerator()
+        {
+            var name = new AssemblyName("Zentient.Testing.DynamicProxies");
+            s_assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+            s_moduleBuilder = s_assemblyBuilder.DefineDynamicModule(name.Name!);
+        }
+
+        /// <summary>
+        /// Creates a proxy instance implementing the requested interface type <typeparamref name="T"/>.
+        /// The created instance will forward calls to the provided <paramref name="engine"/>.
+        /// </summary>
+        /// <typeparam name="T">The interface type to proxy.</typeparam>
+        /// <param name="engine">The mock engine used to record and replay behaviors.</param>
+        /// <returns>An instance implementing <typeparamref name="T"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown when <typeparamref name="T"/> is not an interface.</exception>
+        public static T CreateProxyInstance<T>(MockEngine engine)
+        {
+            var iface = typeof(T);
+            if (!iface.IsInterface) throw new ArgumentException("T must be an interface");
+
+            var proxyType = s_cache.GetOrAdd(iface, CreateProxyType);
+            return (T)Activator.CreateInstance(proxyType, engine)!;
+        }
+
+        /// <summary>
+        /// Creates a proxy <see cref="Type"/> for the specified interface and caches it for reuse.
+        /// </summary>
+        /// <param name="iface">Interface type to implement in the generated proxy.</param>
+        /// <returns>A <see cref="Type"/> representing the generated proxy implementation.</returns>
+        private static Type CreateProxyType(Type iface)
+        {
+            string proxyName = $"Zentient_Testing_Proxy_{iface.Name}_{Guid.NewGuid():N}";
+            var tb = s_moduleBuilder.DefineType(proxyName, TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.Class);
+            tb.AddInterfaceImplementation(iface);
+
+            // private readonly MockEngine _engine;
+            var engineField = tb.DefineField("_engine", typeof(MockEngine), FieldAttributes.Private | FieldAttributes.InitOnly);
+
+            // ctor(MockEngine engine) { base(); this._engine = engine; }
+            var ctor = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new[] { typeof(MockEngine) });
+            var ilCtor = ctor.GetILGenerator();
+            ilCtor.Emit(OpCodes.Ldarg_0);
+            var objCtor = typeof(object).GetConstructor(Type.EmptyTypes)!;
+            ilCtor.Emit(OpCodes.Call, objCtor);
+            ilCtor.Emit(OpCodes.Ldarg_0);
+            ilCtor.Emit(OpCodes.Ldarg_1);
+            ilCtor.Emit(OpCodes.Stfld, engineField);
+            ilCtor.Emit(OpCodes.Ret);
+
+            // Implement methods
+            foreach (var method in iface.GetMethods())
+            {
+                var paramInfos = method.GetParameters();
+                var paramTypes = paramInfos.Select(p => p.ParameterType).ToArray();
+                var mb = tb.DefineMethod(method.Name,
+                    MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.Final | MethodAttributes.HideBySig | MethodAttributes.NewSlot,
+                    method.ReturnType,
+                    paramTypes);
+
+                var ilg = mb.GetILGenerator();
+
+                // locals: object[] args, Type[] paramTypesArray, MethodInfo mi, object result
+                var argsLocal = ilg.DeclareLocal(typeof(object[]));
+                var paramTypesLocal = ilg.DeclareLocal(typeof(Type[]));
+                var miLocal = ilg.DeclareLocal(typeof(MethodInfo));
+                var resultLocal = ilg.DeclareLocal(typeof(object));
+
+                // args = new object[paramCount]
+                ilg.Emit(OpCodes.Ldc_I4, paramTypes.Length);
+                ilg.Emit(OpCodes.Newarr, typeof(object));
+                ilg.Emit(OpCodes.Stloc, argsLocal);
+
+                // fill args
+                for (int i = 0; i < paramTypes.Length; i++)
+                {
+                    ilg.Emit(OpCodes.Ldloc, argsLocal);
+                    ilg.Emit(OpCodes.Ldc_I4, i);
+                    ilg.Emit(OpCodes.Ldarg, i + 1);
+                    if (paramTypes[i].IsValueType)
+                        ilg.Emit(OpCodes.Box, paramTypes[i]);
+                    ilg.Emit(OpCodes.Stelem_Ref);
+                }
+
+                // load Type object for iface
+                ilg.Emit(OpCodes.Ldtoken, iface);
+                ilg.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Static)!);
+
+                // push method name
+                ilg.Emit(OpCodes.Ldstr, method.Name);
+
+                // build Type[] of parameter types
+                ilg.Emit(OpCodes.Ldc_I4, paramTypes.Length);
+                ilg.Emit(OpCodes.Newarr, typeof(Type));
+                ilg.Emit(OpCodes.Stloc, paramTypesLocal);
+                for (int i = 0; i < paramTypes.Length; i++)
+                {
+                    ilg.Emit(OpCodes.Ldloc, paramTypesLocal);
+                    ilg.Emit(OpCodes.Ldc_I4, i);
+                    ilg.Emit(OpCodes.Ldtoken, paramTypes[i]);
+                    ilg.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Static)!);
+                    ilg.Emit(OpCodes.Stelem_Ref);
+                }
+
+                // call GetMethod
+                ilg.Emit(OpCodes.Ldloc, paramTypesLocal);
+                ilg.Emit(OpCodes.Callvirt, typeof(Type).GetMethod("GetMethod", new Type[] { typeof(string), typeof(Type[]) })!);
+                ilg.Emit(OpCodes.Stloc, miLocal);
+
+                // load engine: this._engine
+                ilg.Emit(OpCodes.Ldarg_0);
+                ilg.Emit(OpCodes.Ldfld, engineField);
+
+                // load methodinfo
+                ilg.Emit(OpCodes.Ldloc, miLocal);
+
+                // load args array
+                ilg.Emit(OpCodes.Ldloc, argsLocal);
+
+                // call engine.Invoke(methodInfo, args)
+                ilg.Emit(OpCodes.Callvirt, typeof(MockEngine).GetMethod("Invoke")!);
+                ilg.Emit(OpCodes.Stloc, resultLocal);
+
+                // handle return
+                if (method.ReturnType == typeof(void))
+                {
+                    // pop result and return
+                    // result is in local, nothing to do
+                }
+                else
+                {
+                    // load resultLocal
+                    ilg.Emit(OpCodes.Ldloc, resultLocal);
+                    if (method.ReturnType.IsValueType)
+                    {
+                        ilg.Emit(OpCodes.Unbox_Any, method.ReturnType);
+                    }
+                    else
+                    {
+                        ilg.Emit(OpCodes.Castclass, method.ReturnType);
+                    }
+                    ilg.Emit(OpCodes.Ret);
+                }
+
+                // if void, just return
+                if (method.ReturnType == typeof(void))
+                {
+                    ilg.Emit(OpCodes.Ret);
+                }
+
+                tb.DefineMethodOverride(mb, method);
+            }
+
+            return tb.CreateTypeInfo()!;
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/Properties/AssemblyInfo.cs =====
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Zentient.Testing.Tests")]
+
+===== src/Zentient.Testing/ResultAssertions.cs =====
+// <copyright file="ResultAssertions.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Linq.Expressions;
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Provides a small set of result assertion helpers used by test scenarios.
+    /// </summary>
+    /// <typeparam name="TResult">Type of the result being asserted.</typeparam>
+    internal sealed class ResultAssertions<TResult> : IResultAssertions<TResult>
+    {
+        private readonly TResult _value;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ResultAssertions{TResult}"/> with the supplied value.
+        /// </summary>
+        /// <param name="value">The result value under test.</param>
+        public ResultAssertions(TResult value) => _value = value;
+
+        /// <inheritdoc />
+        public void NotBeNull()
+        {
+            if (_value is null) throw new InvalidOperationException("Expected result to not be null.");
+        }
+
+        /// <inheritdoc />
+        public void HaveValue(TResult expected)
+        {
+            if (!Equals(_value, expected)) throw new InvalidOperationException($"Expected value {expected} but was {_value}.");
+        }
+
+        /// <inheritdoc />
+        public void WithProperty<TProperty>(Expression<Func<TResult, TProperty>> selector, TProperty expected)
+        {
+            ArgumentNullException.ThrowIfNull(selector);
+            var func = selector.Compile();
+            var actual = func(_value!);
+            if (!Equals(actual, expected)) throw new InvalidOperationException($"Expected property to be {expected} but was {actual}.");
+        }
+
+        /// <inheritdoc />
+        public IResultAssertions<TResult> AndAlso => this;
+    }
+}
+
+
+===== src/Zentient.Testing/ScenarioFactory.cs =====
+// <copyright file="ScenarioFactory.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing
+{
+    /// <summary>
+    /// Factory helpers for creating reusable test scenarios.
+    /// </summary>
+    public static class TestScenario
+    {
+        /// <summary>
+        /// Create a new scenario instance that uses the supplied asynchronous act delegate.
+        /// </summary>
+        /// <typeparam name="TInput">The scenario input type.</typeparam>
+        /// <typeparam name="TResult">The scenario result type.</typeparam>
+        /// <param name="act">An asynchronous delegate that executes the system under test using the harness and input.</param>
+        /// <returns>An <see cref="ITestScenario{TInput,TResult}"/> instance.</returns>
+        public static ITestScenario<TInput, TResult> For<TInput, TResult>(Func<ITestHarness, TInput, CancellationToken, Task<TResult>> act)
+        {
+            ArgumentNullException.ThrowIfNull(act);
+            var s = new Zentient.Testing.Internal.TestScenario<TInput, TResult>();
+            s.SetAct((h, input, ct) => act(h, input, ct));
+            return s;
+        }
+
+        /// <summary>
+        /// Create a new scenario that resolves a handler of type <typeparamref name="THandler"/>
+        /// from the harness and invokes the supplied asynchronous handler delegate.
+        /// </summary>
+        /// <typeparam name="THandler">Handler type to resolve from the harness.</typeparam>
+        /// <typeparam name="TInput">The scenario input type.</typeparam>
+        /// <typeparam name="TResult">The scenario result type.</typeparam>
+        /// <param name="handler">An asynchronous delegate that executes the handler with the resolved instance and input.</param>
+        /// <returns>An <see cref="ITestScenario{TInput,TResult}"/> instance.</returns>
+        public static ITestScenario<TInput, TResult> ForHandler<THandler, TInput, TResult>(Func<THandler, TInput, CancellationToken, Task<TResult>> handler)
+        {
+            ArgumentNullException.ThrowIfNull(handler);
+            var s = new Zentient.Testing.Internal.TestScenario<TInput, TResult>();
+            s.SetAct(async (h, input, ct) =>
+            {
+                var resolved = h.Resolve<THandler>();
+                return await handler(resolved, input, ct).ConfigureAwait(false);
+            });
+            return s;
+        }
+
+        /// <summary>
+        /// Create a new scenario that resolves a handler of type <typeparamref name="THandler"/>
+        /// from the harness and invokes the supplied synchronous handler delegate.
+        /// </summary>
+        /// <typeparam name="THandler">Handler type to resolve from the harness.</typeparam>
+        /// <typeparam name="TInput">The scenario input type.</typeparam>
+        /// <typeparam name="TResult">The scenario result type.</typeparam>
+        /// <param name="handler">A synchronous delegate that executes the handler with the resolved instance and input.</param>
+        /// <returns>An <see cref="ITestScenario{TInput,TResult}"/> instance.</returns>
+        public static ITestScenario<TInput, TResult> ForHandler<THandler, TInput, TResult>(Func<THandler, TInput, TResult> handler)
+        {
+            ArgumentNullException.ThrowIfNull(handler);
+            var s = new Zentient.Testing.Internal.TestScenario<TInput, TResult>();
+            s.SetAct((h, input, ct) => Task.FromResult(handler(h.Resolve<THandler>(), input)));
+            return s;
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/TestHarness.cs =====
+// <copyright file="TestHarness.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Lightweight per-test resolver that provides simple registration-based resolution
+    /// and fallback constructor-based instantiation for types.
+    /// </summary>
+    internal sealed class TestHarness : ITestHarness, IDisposable
+    {
+        private readonly Dictionary<Type, object> _registrations;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="TestHarness"/> using the supplied registrations.
+        /// </summary>
+        /// <param name="registrations">A dictionary of pre-populated service registrations keyed by type.</param>
+        public TestHarness(Dictionary<Type, object> registrations)
+        {
+            _registrations = registrations ?? new Dictionary<Type, object>();
+        }
+
+        /// <inheritdoc />
+        public T Resolve<T>()
+        {
+            var t = typeof(T);
+            if (_registrations.TryGetValue(t, out var instance))
+                return (T)instance;
+
+            var ctors = t.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+                .OrderByDescending(c => c.GetParameters().Length)
+                .ToArray();
+
+            var attempted = new List<string>();
+            var missingAcross = new HashSet<string>();
+
+            foreach (var ctor in ctors)
+            {
+                var parameters = ctor.GetParameters();
+                var args = new object?[parameters.Length];
+                var ok = true;
+                var missingForThis = new List<string>();
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    var pType = parameters[i].ParameterType;
+                    if (_registrations.TryGetValue(pType, out var dep))
+                    {
+                        args[i] = dep;
+                    }
+                    else
+                    {
+                        ok = false;
+                        missingForThis.Add(pType.FullName ?? pType.Name);
+                        missingAcross.Add(pType.FullName ?? pType.Name);
+                    }
+                }
+
+                var sig = parameters.Length == 0
+                    ? "()"
+                    : "(" + string.Join(", ", parameters.Select(p => p.ParameterType.Name + " " + p.Name)) + ")";
+
+                if (ok)
+                {
+                    return (T)ctor.Invoke(args);
+                }
+
+                attempted.Add($"ctor {sig} - missing: {string.Join(", ", missingForThis)}");
+            }
+
+            var message = $"Could not resolve type '{t.FullName}'.\n" +
+                          "Attempted public constructors:\n" +
+                          string.Join("\n", attempted) + "\n" +
+                          (missingAcross.Count > 0
+                              ? "Register the following dependency types with the harness using WithDependency<T>(instance): " + string.Join(", ", missingAcross)
+                              : "No suitable public constructor found. Consider adding a public constructor or register an instance with the harness.");
+
+            throw new InvalidOperationException(message);
+        }
+
+        /// <summary>
+        /// Dispose the harness, disposing any registered <see cref="IDisposable"/> instances and clearing registrations.
+        /// </summary>
+        public void Dispose()
+        {
+            foreach (var kv in _registrations)
+            {
+                if (kv.Value is IDisposable d)
+                    d.Dispose();
+            }
+
+            _registrations.Clear();
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/TestHarnessBuilder.cs =====
+// <copyright file="TestHarnessBuilder.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.Generic;
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Builder used to configure and produce a <see cref="TestHarness"/> instance for a single test.
+    /// </summary>
+    internal sealed class TestHarnessBuilder : ITestHarnessBuilder
+    {
+        private readonly Dictionary<Type, object> _registrations = new Dictionary<Type, object>();
+
+        /// <inheritdoc />
+        public ITestHarnessBuilder WithDependency<T>(T instance)
+        {
+            _registrations[typeof(T)] = instance!;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public ITestHarnessBuilder WithMock<T>(Action<Zentient.Abstractions.Testing.IMockBuilder<T>> configure)
+        {
+            ArgumentNullException.ThrowIfNull(configure);
+
+            var builder = new MockBuilder<T>();
+            configure(builder);
+            IMockVerifier<T> verifier;
+            T mock = builder.Build(out verifier);
+            _registrations[typeof(T)] = mock!;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public ITestHarnessBuilder WithMock<T>(Action<Zentient.Abstractions.Testing.IMockBuilder<T>> configure, out IMockVerifier<T> verifier)
+        {
+            ArgumentNullException.ThrowIfNull(configure);
+
+            var builder = new MockBuilder<T>();
+            configure(builder);
+            T mock = builder.Build(out verifier);
+            _registrations[typeof(T)] = mock!;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public ITestHarnessBuilder Replace<T>(T instance)
+        {
+            _registrations[typeof(T)] = instance!;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public ITestHarness Build()
+        {
+            return new TestHarness(new Dictionary<Type, object>(_registrations));
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/TestScenario.cs =====
+// <copyright file="TestScenario.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Zentient.Abstractions.Testing;
+
+namespace Zentient.Testing.Internal
+{
+    /// <summary>
+    /// Implementation of <see cref="ITestScenario{TInput,TResult}"/> that supports arranging
+    /// a harness, executing an act delegate, and performing assertions against the result.
+    /// </summary>
+    /// <typeparam name="TInput">Type of the scenario input.</typeparam>
+    /// <typeparam name="TResult">Type of the scenario result.</typeparam>
+    internal sealed class TestScenario<TInput, TResult> : ITestScenario<TInput, TResult>
+    {
+        private readonly List<Action<ITestHarnessBuilder>> _arrangers = new List<Action<ITestHarnessBuilder>>();
+        private Func<ITestHarness, TInput, CancellationToken, Task<TResult>>? _act;
+        private TResult? _lastResult;
+
+        /// <inheritdoc />
+        public ITestScenario<TInput, TResult> Arrange(Action<ITestHarnessBuilder> configure)
+        {
+            ArgumentNullException.ThrowIfNull(configure);
+            _arrangers.Add(configure);
+            return this;
+        }
+
+        /// <summary>
+        /// Configure the act delegate to be invoked during <see cref="ActAsync"/>.
+        /// </summary>
+        /// <param name="act">Asynchronous delegate that executes the system under test.</param>
+        public void SetAct(Func<ITestHarness, TInput, CancellationToken, Task<TResult>> act)
+        {
+            _act = act ?? throw new ArgumentNullException(nameof(act));
+        }
+
+        /// <inheritdoc />
+        public async Task<TResult> ActAsync(TInput input, CancellationToken ct = default)
+        {
+            if (_act is null)
+                throw new InvalidOperationException("Act has not been configured for this scenario.");
+
+            var builder = new TestHarnessBuilder();
+            foreach (var a in _arrangers) a(builder);
+            using var harness = (TestHarness)builder.Build();
+            _lastResult = await _act(harness, input, ct).ConfigureAwait(false);
+            return _lastResult!;
+        }
+
+        /// <inheritdoc />
+        public void Assert(Action<IResultAssertions<TResult>> assertions)
+        {
+            ArgumentNullException.ThrowIfNull(assertions);
+            if (_lastResult is null) throw new InvalidOperationException("No result available. Ensure ActAsync has been executed before asserting.");
+
+            var ra = new ResultAssertions<TResult>(_lastResult);
+            assertions(ra);
+        }
+    }
+}
+
+
+===== src/Zentient.Testing/XunitShim.cs =====
+// <copyright file="XunitShim.cs" authors="Zentient Framework Team">
+// Copyright � 2025 Zentient Framework Team. All rights reserved.
+// </copyright>
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Zentient.Testing
+{
+    /// <summary>
+    /// Minimal assertion helpers used when xUnit is not available. Intended as a very small shim
+    /// for library internal usage and examples.
+    /// </summary>
+    public static class Assert
+    {
+        /// <summary>
+        /// Verifies that the specified condition is true.
+        /// </summary>
+        /// <param name="condition">Condition that must be true.</param>
+        /// <param name="message">Optional message to include in the failure exception.</param>
+        public static void True(bool condition, string? message = null)
+        {
+            if (!condition) throw new InvalidOperationException(message ?? "Assert.True failed.");
+        }
+
+        /// <summary>
+        /// Verifies that the specified condition is false.
+        /// </summary>
+        /// <param name="condition">Condition that must be false.</param>
+        /// <param name="message">Optional message to include in the failure exception.</param>
+        public static void False(bool condition, string? message = null)
+        {
+            if (condition) throw new InvalidOperationException(message ?? "Assert.False failed.");
+        }
+
+        /// <summary>
+        /// Verifies that two values are equal using the default equality comparer.
+        /// </summary>
+        /// <typeparam name="T">Type of the values.</typeparam>
+        /// <param name="expected">Expected value.</param>
+        /// <param name="actual">Actual value.</param>
+        public static void Equal<T>(T expected, T actual)
+        {
+            if (!EqualityComparer<T>.Default.Equals(expected, actual))
+                throw new InvalidOperationException($"Assert.Equal failed. Expected: {expected}. Actual: {actual}.");
+        }
+
+        /// <summary>
+        /// Verifies that the provided object is not null.
+        /// </summary>
+        /// <param name="obj">Object under test.</param>
+        /// <param name="message">Optional failure message.</param>
+        public static void NotNull(object? obj, string? message = null)
+        {
+            if (obj is null) throw new InvalidOperationException(message ?? "Assert.NotNull failed.");
+        }
+
+        /// <summary>
+        /// Verifies that the provided object is null.
+        /// </summary>
+        /// <param name="obj">Object under test.</param>
+        /// <param name="message">Optional failure message.</param>
+        public static void Null(object? obj, string? message = null)
+        {
+            if (obj is not null) throw new InvalidOperationException(message ?? "Assert.Null failed.");
+        }
+
+        /// <summary>
+        /// Verifies that the specified substring is contained within the actual string using ordinal comparison.
+        /// </summary>
+        /// <param name="expectedSubstring">Substring expected to be present.</param>
+        /// <param name="actualString">String to search.</param>
+        public static void Contains(string expectedSubstring, string actualString)
+        {
+            if (actualString is null) throw new InvalidOperationException("Assert.Contains failed. Actual string is null.");
+            if (!actualString.Contains(expectedSubstring, StringComparison.Ordinal))
+                throw new InvalidOperationException($"Assert.Contains failed. Expected to find '{expectedSubstring}' in '{actualString}'.");
+        }
+    }
+}
+
+

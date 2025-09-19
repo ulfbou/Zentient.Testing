@@ -14,11 +14,15 @@ Breaking changes / migration
 - If you depend on public interfaces, add integration tests and pin the package version.
 
 Known issues
-- Documentation generation is limited in this release.
-- Some advanced mocking scenarios may not be supported yet.
+- Documentation generation is limited in this release. See [DocFX workflow](../../.github/workflows/docfx.yml).
+- Some advanced mocking scenarios may not be supported yet. See [API Reference](api-reference-alfa.md) for current capabilities.
 
 Installation
 - Install the package from the pre-release NuGet feed or from the GitHub release assets.
 
 Contact
 - File issues on the repository for bugs or feature requests.
+
+---
+
+For detailed API surface and examples see the internal [API Reference](api-reference-alfa.md) or the public [api.md](/docs/api.md).

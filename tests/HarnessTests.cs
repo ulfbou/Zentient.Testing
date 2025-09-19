@@ -2,12 +2,17 @@
 // Copyright © 2025 Zentient Framework Team. All rights reserved.
 // </copyright>
 
+using FluentAssertions;
+
 using System.Threading;
 using System.Threading.Tasks;
+
 using Xunit;
-using FluentAssertions;
+
 using Zentient.Testing;
 using Zentient.Testing.Internal;
+
+using static Zentient.Testing.Tests.HarnessMockVerifierTests;
 
 namespace Zentient.Testing.Tests
 {
@@ -35,7 +40,7 @@ namespace Zentient.Testing.Tests
                 builder.WithMock<ICalculator>(mb => mb.Given(x => x.Add(It.IsAny<int>(), It.IsAny<int>())).ThenReturns(100));
             });
 
-            int result = await scenario.ActAsync((1, 2)).ConfigureAwait(false);
+            int result = await scenario.ActAsync((1, 2));
 
             result.Should().Be(100);
         }

@@ -4,7 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Zentient.Testing.Internal
+namespace Zentient.Testing
 {
     /// <summary>
     /// Helper used in expression trees to indicate a wildcard argument.

@@ -1,65 +1,70 @@
-// <copyright file="TestScenario.cs" authors="Zentient Framework Team">
+// <copyright file="ScenarioFactory.cs" authors="Zentient Framework Team">
 // Copyright © 2025 Zentient Framework Team. All rights reserved.
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Zentient.Abstractions.Testing;
 
-namespace Zentient.Testing.Internal
+namespace Zentient.Testing
 {
     /// <summary>
-    /// Implementation of <see cref="ITestScenario{TInput,TResult}"/> that supports arranging
-    /// a harness, executing an act delegate, and performing assertions against the result.
+    /// Factory helpers for creating reusable test scenarios.
     /// </summary>
-    /// <typeparam name="TInput">Type of the scenario input.</typeparam>
-    /// <typeparam name="TResult">Type of the scenario result.</typeparam>
-    internal sealed class TestScenario<TInput, TResult> : ITestScenario<TInput, TResult>
+    public static class TestScenario
     {
-        private readonly List<Action<ITestHarnessBuilder>> _arrangers = new List<Action<ITestHarnessBuilder>>();
-        private Func<ITestHarness, TInput, CancellationToken, Task<TResult>>? _act;
-        private TResult? _lastResult;
-
-        /// <inheritdoc />
-        public ITestScenario<TInput, TResult> Arrange(Action<ITestHarnessBuilder> configure)
+        /// <summary>
+        /// Create a new scenario instance that uses the supplied asynchronous act delegate.
+        /// </summary>
+        /// <typeparam name="TInput">The scenario input type.</typeparam>
+        /// <typeparam name="TResult">The scenario result type.</typeparam>
+        /// <param name="act">An asynchronous delegate that executes the system under test using the harness and input.</param>
+        /// <returns>An <see cref="ITestScenario{TInput,TResult}"/> instance.</returns>
+        public static ITestScenario<TInput, TResult> For<TInput, TResult>(Func<ITestHarness, TInput, CancellationToken, Task<TResult>> act)
         {
-            ArgumentNullException.ThrowIfNull(configure);
-            _arrangers.Add(configure);
-            return this;
+            ArgumentNullException.ThrowIfNull(act);
+            var s = new Zentient.Testing.Internal.TestScenario<TInput, TResult>();
+            s.SetAct((h, input, ct) => act(h, input, ct));
+            return s;
         }
 
         /// <summary>
-        /// Configure the act delegate to be invoked during <see cref="ActAsync"/>.
+        /// Create a new scenario that resolves a handler of type <typeparamref name="THandler"/>
+        /// from the harness and invokes the supplied asynchronous handler delegate.
         /// </summary>
-        /// <param name="act">Asynchronous delegate that executes the system under test.</param>
-        public void SetAct(Func<ITestHarness, TInput, CancellationToken, Task<TResult>> act)
+        /// <typeparam name="THandler">Handler type to resolve from the harness.</typeparam>
+        /// <typeparam name="TInput">The scenario input type.</typeparam>
+        /// <typeparam name="TResult">The scenario result type.</typeparam>
+        /// <param name="handler">An asynchronous delegate that executes the handler with the resolved instance and input.</param>
+        /// <returns>An <see cref="ITestScenario{TInput,TResult}"/> instance.</returns>
+        public static ITestScenario<TInput, TResult> ForHandler<THandler, TInput, TResult>(Func<THandler, TInput, CancellationToken, Task<TResult>> handler)
         {
-            _act = act ?? throw new ArgumentNullException(nameof(act));
+            ArgumentNullException.ThrowIfNull(handler);
+            var s = new Zentient.Testing.Internal.TestScenario<TInput, TResult>();
+            s.SetAct(async (h, input, ct) =>
+            {
+                var resolved = h.Resolve<THandler>();
+                return await handler(resolved, input, ct).ConfigureAwait(false);
+            });
+            return s;
         }
 
-        /// <inheritdoc />
-        public async Task<TResult> ActAsync(TInput input, CancellationToken ct = default)
+        /// <summary>
+        /// Create a new scenario that resolves a handler of type <typeparamref name="THandler"/>
+        /// from the harness and invokes the supplied synchronous handler delegate.
+        /// </summary>
+        /// <typeparam name="THandler">Handler type to resolve from the harness.</typeparam>
+        /// <typeparam name="TInput">The scenario input type.</typeparam>
+        /// <typeparam name="TResult">The scenario result type.</typeparam>
+        /// <param name="handler">A synchronous delegate that executes the handler with the resolved instance and input.</param>
+        /// <returns>An <see cref="ITestScenario{TInput,TResult}"/> instance.</returns>
+        public static ITestScenario<TInput, TResult> ForHandler<THandler, TInput, TResult>(Func<THandler, TInput, TResult> handler)
         {
-            if (_act is null)
-                throw new InvalidOperationException("Act has not been configured for this scenario.");
-
-            var builder = new TestHarnessBuilder();
-            foreach (var a in _arrangers) a(builder);
-            using var harness = (TestHarness)builder.Build();
-            _lastResult = await _act(harness, input, ct).ConfigureAwait(false);
-            return _lastResult!;
-        }
-
-        /// <inheritdoc />
-        public void Assert(Action<IResultAssertions<TResult>> assertions)
-        {
-            ArgumentNullException.ThrowIfNull(assertions);
-            if (_lastResult is null) throw new InvalidOperationException("No result available. Ensure ActAsync has been executed before asserting.");
-
-            var ra = new ResultAssertions<TResult>(_lastResult);
-            assertions(ra);
+            ArgumentNullException.ThrowIfNull(handler);
+            var s = new Zentient.Testing.Internal.TestScenario<TInput, TResult>();
+            s.SetAct((h, input, ct) => Task.FromResult(handler(h.Resolve<THandler>(), input)));
+            return s;
         }
     }
 }
